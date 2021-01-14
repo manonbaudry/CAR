@@ -13,6 +13,11 @@ public class FtpServer {
     private ServerSocket serverSocket;
     boolean running = false;
     
+    /**
+     * Constructor.
+     * Create and run a multithreaded ftp server on port 1010 by default.
+     * Listen for client to connect and wrap them to a FTP server thread.
+     */
     public FtpServer() {
     	try {
     		serverSocket = new ServerSocket(serverPort);
