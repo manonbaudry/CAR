@@ -22,13 +22,15 @@ public class FtpServer {
 		}
     	
     	running = true;
-    	System.out.println("FTP server running. Listening on port 1025");
+    	System.out.println("FTP server running. Listening on port " + serverPort);
     
     	while(running) {
     		try {
+    			
     			Socket client = serverSocket.accept();
     			FtpServerThread cliThread = new FtpServerThread(client);
     			cliThread.start();
+    			System.out.println("New client listening");
     			
     		}catch (Exception e) {
     			System.out.println("Error listening :" + e);
