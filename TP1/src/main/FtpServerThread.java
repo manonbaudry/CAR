@@ -4,6 +4,7 @@ import utils.CSVReader;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
@@ -16,12 +17,21 @@ import java.io.InputStreamReader;
  *
  */
 public class FtpServerThread extends Thread {
+	
+	//Thread properties
 	private Socket cliSocket;
 	private boolean cliThreadRunning = true;
+	
+	//User properties
 	private DataOutputStream controlOutWriter;
 	private BufferedReader controlIn;
 	private userStatus currentUserStatus = userStatus.NOTLOGGEDIN;
 	private String username = "";
+	
+	//Paths properties
+	private String currentDIR;
+	private String ROOT;
+	private final String FILESEPARATOR = "/";
 	
 	/**
 	 * Construct a thread by default
@@ -36,6 +46,8 @@ public class FtpServerThread extends Thread {
 	 */
 	public FtpServerThread(Socket client) {
 		cliSocket = client;
+		ROOT = System.getProperty("user.dir");
+		currentDIR = ROOT + "/CAR";
 	}
 	
 	private void printMsg(String msg) {
@@ -123,13 +135,47 @@ public class FtpServerThread extends Thread {
 	
 	/**
 	 * DIR method. Get a list of the given directory
-	 * @param path
+	 * @param path - path to the directory to list
 	 */
 	private void DIR(String path) {
-		
-		
+		String filename = currentDIR;
+        if (path != null)
+        {
+            filename = filename + FILESEPARATOR + path;
+        }
+        
+        String content[] = getContent(filename);        
+        
+        if(content == null) {
+        	printMsg("550 File does not exist");
+        }else {
+        	printMsg("125 Opening ASCII mode data connection for file list");
+        	for (String e : content) {
+				printMsg(e);
+			}
+        	printMsg("226 Transfer complete");
+        }
+        
 	}
 
+	/**
+	 * Local Method. Used by (DIR) to get the content of the path
+	 * @param filename -path to get the dir
+	 * @return the list of given DIR
+	 */
+	private String[] getContent (String filename){
+		File file = new File(filename);
+        
+		if(file.exists() && file.isFile()) {
+        	return file.list();
+        }else if (file.exists() && file.isDirectory()) {
+        	String[] fileInfos = new String[1];
+        	fileInfos[0] = file.getName();
+        	return fileInfos;
+        }else {
+        	return null;
+        }
+	}
 	/**
 	 * USER method. Log the user if included in csv file
 	 * @param username - username
