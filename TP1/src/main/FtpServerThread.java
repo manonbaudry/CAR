@@ -134,13 +134,10 @@ public class FtpServerThread extends Thread {
 	}
 	
 	/**
-	 * DIR method. Get a list of the given directory
+	 * dir method. Get a list of the given directory
 	 * @param path - path to the directory to list
 	 */
 	private void dir(String path) {
-		
-		
-	private void DIR(String path) {
 		String filename = currentDIR;
         if (path != null)
         {
