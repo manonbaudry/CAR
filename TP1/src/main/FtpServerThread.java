@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.io.InputStreamReader;
@@ -28,6 +29,12 @@ public class FtpServerThread extends Thread {
 	private UserStatus userStatus = UserStatus.NotLoggedIn;
 	private String username = "";
 	
+	//Data properties 
+	private ServerSocket dataSocket;
+	private Socket dataConnection;
+	private int dataPort;
+	private DataOutputStream dataOutWriter;
+	
 	//Paths properties
 	private String currentDIR;
 	private String ROOT;
@@ -44,12 +51,18 @@ public class FtpServerThread extends Thread {
 	 * Initiate the client to our class
 	 * @param client - the client to map
 	 */
-	public FtpServerThread(Socket client) {
-		cliSocket = client;
-		ROOT = System.getProperty("user.dir");
-		currentDIR = ROOT + "/CAR";
+	public FtpServerThread(Socket client, int dataPort) {
+		super();
+		this.cliSocket = client;
+		this.dataPort = dataPort;
+		this.ROOT = System.getProperty("user.dir");
+		this.currentDIR = ROOT + "/CAR";
 	}
 	
+	/**
+	 * Print a message via the control connection
+	 * @param msg - the message to send 
+	 */
 	private void printMsg(String msg) {
 		try {
 			controlOutWriter.writeBytes(msg+"\r\n");
@@ -57,6 +70,58 @@ public class FtpServerThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Print a message via the data connection
+	 * @param msg - the message to send
+	 */
+	private void printDataMsg(String msg) {
+		try {
+			if (dataConnection == null || dataConnection.isClosed())
+	        {
+	            printMsg("425 No data connection was established");
+	        }else{
+	        	dataOutWriter.writeBytes(msg+"\r\n");
+	        	dataOutWriter.flush();
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Open a data connection socket 
+	 * @param port - which port to listen for incoming connection
+	 */
+	private void openDataConnection(int port) {
+		try {
+			dataSocket = new ServerSocket(port);
+			dataConnection = dataSocket.accept();
+			dataOutWriter = new DataOutputStream(dataConnection.getOutputStream());
+			System.out.println("data connecté"); //TODO remove
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	/**
+	 * Close the opened data connection
+	 */
+	private void closeDataConnection() {
+		try {
+			dataOutWriter.close();
+			dataConnection.close();
+			dataSocket.close();
+			System.out.println("Data connection closed");
+		} catch (Exception e) {
+			System.out.println("Error, could not close data connection");
+			System.out.println(e);
+		}
+		
+		dataOutWriter = null;
+		dataConnection = null;
+		dataSocket = null;
 	}
 
 	/**
@@ -134,12 +199,19 @@ public class FtpServerThread extends Thread {
 	}
 	
 	/**
-	 * dir method. Get a list of the given directory
+	 * DIR method. Get a list of the given directory
 	 * @param path - path to the directory to list
 	 */
 	private void dir(String path) {
+		
+		if (dataConnection == null || dataConnection.isClosed()){
+	            openDataConnection(dataPort);
+	    }
+		
+		
 		String filename = currentDIR;
-        if (path != null)
+        
+		if (path != null)
         {
             filename = filename + FILESEPARATOR + path;
         }
@@ -151,11 +223,12 @@ public class FtpServerThread extends Thread {
         }else {
         	printMsg("125 Opening ASCII mode data connection for file list");
         	for (String e : content) {
-				printMsg(e);
+				printDataMsg(e);
 			}
         	printMsg("226 Transfer complete");
         }
-
+        
+        closeDataConnection();
 	}
 
 	/**
@@ -184,12 +257,12 @@ public class FtpServerThread extends Thread {
 		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
 		username = username.split(" ")[1];
 
-		if (userStatus == userStatus.LoggedIn) {
+		if (userStatus == UserStatus.LoggedIn) {
 			printMsg("530 User already logged in");
 		} else if(csvReader.checkUserName(username)) {
 			printMsg("331 User name ok, need password");
 			this.username = username;
-			userStatus = userStatus.EnteredUserName;
+			userStatus = UserStatus.EnteredUserName;
 		}else {
 			printMsg("530 Not logged in");
 		}
@@ -203,10 +276,10 @@ public class FtpServerThread extends Thread {
 		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
 		password = password.split(" ")[1];
 
-		if (userStatus == userStatus.LoggedIn) {
+		if (userStatus == UserStatus.LoggedIn) {
 			printMsg("530 User already logged in");
-		}else if(userStatus == userStatus.EnteredUserName && csvReader.checkPassword(this.username, password)) {
-			userStatus = userStatus.LoggedIn;
+		}else if(userStatus == UserStatus.EnteredUserName && csvReader.checkPassword(this.username, password)) {
+			userStatus = UserStatus.LoggedIn;
 			printMsg("230 User logged in");
 		}else {
 			printMsg("530 Not logged in");

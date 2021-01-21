@@ -28,15 +28,17 @@ public class FtpServer {
     	
     	running = true;
     	System.out.println("FTP server running. Listening on port " + serverPort);
-    
+    	
+    	int nbThreads = 0 ;
+    	
     	while(running) {
     		try {
-    			
     			Socket client = serverSocket.accept();
-    			FtpServerThread cliThread = new FtpServerThread(client);
+    			int dataPort = serverPort + nbThreads + 1 ;
+    			FtpServerThread cliThread = new FtpServerThread(client, dataPort);
     			cliThread.start();
+    			nbThreads++;
     			System.out.println("New client listening");
-    			
     		}catch (Exception e) {
     			System.out.println("Error listening :" + e);
 			}
