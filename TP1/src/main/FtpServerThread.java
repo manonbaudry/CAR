@@ -105,6 +105,11 @@ public class FtpServerThread extends Thread {
 			PASS(args[0]);
 			break;
 		case "dir":
+			if (args[0].isEmpty()) {
+				DIR("");
+			}else {
+				DIR(args[0]);
+			}			
 			break;
 		case "get":
 			break;
@@ -121,6 +126,15 @@ public class FtpServerThread extends Thread {
 		}
 	}
 	
+	/**
+	 * DIR method. Get a list of the given directory
+	 * @param path
+	 */
+	private void DIR(String path) {
+		
+		
+	}
+
 	/**
 	 * USER method. Log the user if included in csv file
 	 * @param username - username
