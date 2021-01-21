@@ -189,6 +189,7 @@ public class FtpServerThread extends Thread {
 			put(args[0]);
 			break;
 		case "cd":
+			cd(args[0]);
 			break;
 		case "quit":
 			quit();
@@ -196,6 +197,31 @@ public class FtpServerThread extends Thread {
 
 		default:
 			printMsg("501 Unknown command");
+		}
+	}
+	
+	/**
+	 * CD Method. Change working directory
+	 * @param dir - the dir to move to.
+	 */
+	private void cd(String dir) {
+		String filename = currentDIR;
+		
+		if(dir.equals("..")) {
+			int ind = filename.lastIndexOf(FILESEPARATOR);
+			if (ind > 0) {
+				filename = filename.substring(0, ind);
+			}
+		}else if(dir!=null && !dir.equals(".")) {
+			filename = filename + FILESEPARATOR + dir;
+		}
+		
+		File f = new File(filename);
+		if(f.exists() && f.isDirectory() && (filename.length() >= ROOT.length())) {
+			currentDIR = filename;
+			printMsg("250 Requested file action okay, completed.");
+		}else {
+			printMsg("550 Requested action not taken. File unavailable");
 		}
 	}
 	
