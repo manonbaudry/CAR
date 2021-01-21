@@ -2,7 +2,9 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
 import java.io.InputStreamReader;
 
 
@@ -14,6 +16,9 @@ import java.io.InputStreamReader;
 public class FtpServerThread extends Thread {
 	private Socket cliSocket;
 	private boolean cliThreadRunning = true;
+	private DataOutputStream controlOutWriter;
+	private BufferedReader controlIn;
+	
 	
 	private enum userStatus {
 		NOTLOGGEDIN, ENTEREDUSERNAME, LOGGEDIN
@@ -40,8 +45,7 @@ public class FtpServerThread extends Thread {
 	 * Run the exe of a thread.
 	 */
 	public void run() {
-		DataOutputStream controlOutWriter;
-		BufferedReader controlIn;
+
 
 		//System.out.println("Accepted Client Address - " + cliSocket.getInetAddress().getHostName());
 
@@ -53,8 +57,7 @@ public class FtpServerThread extends Thread {
 			controlOutWriter = new DataOutputStream(cliSocket.getOutputStream());
 
 			// Greeting
-			controlOutWriter.writeBytes("220 service ready\r\n");
-			controlOutWriter.flush();
+			printMsg("220 service ready");
 
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
@@ -68,17 +71,47 @@ public class FtpServerThread extends Thread {
 				System.exit(-1);
 			}
 
-			controlOutWriter.writeBytes("331 User name ok, need password\r\n");
+			
 			String pwd = controlIn.readLine();
 
 			if(!pwd.equals("PASS toto")){
 				System.out.println("Wrong password");
 				System.exit(-1);
 			}
-			controlOutWriter.writeBytes("230 User logged in\r\n");
+			printMsg("230 User logged in");
 
 		} catch (Exception e) {
 			System.out.println(e);
+		}
+	}
+	
+	/**
+	 * USER method. Log the user if included in csv file
+	 * @param username - username
+	 */
+	private void USER(String username) {
+		if(username) {
+			printMsg("331 User name ok, need password");
+			currentUserStatus = userStatus.ENTEREDUSERNAME;
+		}else if (currentUserStatus == userStatus.LOGGEDIN) {
+			printMsg("530 User already logged in");
+		}else {
+			printMsg("530 Not logged in");
+		}
+	}
+	
+	/**
+	 * PASS method. Check if the given password correspond to the past given user in CSV file
+	 * @param password - password
+	 */
+	private void PASS(String password) {
+		if(currentUserStatus == userStatus.ENTEREDUSERNAME) {
+			currentUserStatus = userStatus.LOGGEDIN;
+			printMsg("230 User logged in");
+		}else if (currentUserStatus == userStatus.LOGGEDIN) {
+			printMsg("530 User already logged in");
+		}else {
+			printMsg("530 Not logged in");
 		}
 	}
 	
@@ -90,14 +123,29 @@ public class FtpServerThread extends Thread {
 		// TODO Auto-generated method stub
 		String[] entireLine = readLine.split(" ");
 		String command = entireLine[0];
-		
-		String[] args = entireLine; //!remove [0]
-		
-		//System.out.println(sortie[0]);
+		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
+				
+		switch (command.toUpperCase()) {
+		case "USER":
+			USER(args[0]);
+			break;
+
+		default:
+			printMsg("501 Unknown command");
+		}
+	}
+	
+	private void printMsg(String msg) {
+		try {
+			controlOutWriter.writeBytes(msg+"\r\n");
+			controlOutWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {
-		FtpServerThread st = new FtpServerThread();
-		st.interpreteCommand("bonjour brice");
+		FtpServerThread a= new FtpServerThread();
+		a.interpreteCommand("bonjour le monde");
 	}
 }
