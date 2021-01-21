@@ -5,11 +5,13 @@ import utils.CSVReader;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 
 /**
@@ -192,6 +194,60 @@ public class FtpServerThread extends Thread {
 		default:
 			printMsg("501 Unknown command");
 		}
+	}
+	
+	/**
+	 * PUT method. Save the given file to the FTP server 
+	 * @param file - the file to save on the server
+	 */
+	private void put(String file) {
+		
+		if (dataConnection == null || dataConnection.isClosed()){
+            openDataConnection(dataPort);
+		}
+				
+		if (file == null) {
+			printMsg("501 No filename given");
+		}else {
+			File f = new File(currentDIR + FILESEPARATOR + file);
+			if(f.exists()) {
+				printMsg("550 File already exists");
+			}else {
+					
+				 printMsg("150 Opening ASCII mode data connection for requested file " + f.getName());
+			     BufferedReader in = null;
+			     DataOutputStream out = null;
+			     
+			     try {
+			    	 in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
+			    	 out = new DataOutputStream(new FileOutputStream(file));
+				} catch (Exception e) {
+					System.out.println("Error create entry stream");
+					System.out.println(e);
+				}
+			     
+			    String curr;
+			    
+			    try {
+					while((curr = in.readLine()) !=null) {
+						out.writeBytes(curr);
+					}
+				} catch (Exception e) {
+					System.out.println("Error read entry stream");
+					System.out.println(e);
+				}
+			    
+			    try {
+			    	out.close();
+					in.close();
+				} catch (Exception e) {
+					System.out.println("Error close entry stream");
+					System.out.println(e);
+				}
+			    printMsg("226 Closing data connection. Requested file action successful.");
+			}
+		}
+		closeDataConnection();
 	}
 	
 	/**
