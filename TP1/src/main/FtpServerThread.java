@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -182,6 +183,7 @@ public class FtpServerThread extends Thread {
 			dir(args[0]);			
 			break;
 		case "get":
+			get(args[0]);
 			break;
 		case "put":
 			put(args[0]);
@@ -196,6 +198,55 @@ public class FtpServerThread extends Thread {
 			printMsg("501 Unknown command");
 		}
 	}
+	
+	/**
+	 * GET method. Get a file from FTP to client
+	 * @param file - the file to get
+	 */
+	private void get(String file) {
+		
+		if (dataConnection == null || dataConnection.isClosed()){
+            openDataConnection(dataPort);
+		}
+			
+		File f = new File(currentDIR + FILESEPARATOR + file);
+		if(!f.exists()) {
+			printMsg("550 File does not exist");
+		}else{
+			
+			 printMsg("150 Opening ASCII mode data connection for requested file " + f.getName());
+		     BufferedReader in = null;
+		     DataOutputStream out = null;
+		     
+		    try{
+		    	 in = new BufferedReader(new FileReader(f));
+		    	 out = new DataOutputStream(dataConnection.getOutputStream());
+			} catch (Exception e) {
+				System.out.println("Error create entry stream");
+				System.out.println(e);
+			}
+		     
+		    String curr;
+		    try {
+				while((curr = in.readLine()) !=null) {
+					out.writeBytes(curr);
+				}
+			} catch (Exception e) {
+				System.out.println("Error read entry stream");
+				System.out.println(e);
+			}
+		    
+		    try {
+		    	out.close();
+				in.close();
+			} catch (Exception e) {
+				System.out.println("Error close entry stream");
+				System.out.println(e);
+			}
+		    printMsg("226 Closing data connection. Requested file action successful.");
+		}
+		closeDataConnection();
+	}	
 	
 	/**
 	 * PUT method. Save the given file to the FTP server 
@@ -213,7 +264,7 @@ public class FtpServerThread extends Thread {
 			File f = new File(currentDIR + FILESEPARATOR + file);
 			if(f.exists()) {
 				printMsg("550 File already exists");
-			}else {
+			}else{
 					
 				 printMsg("150 Opening ASCII mode data connection for requested file " + f.getName());
 			     BufferedReader in = null;
