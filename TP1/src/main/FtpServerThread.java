@@ -17,22 +17,22 @@ import java.io.InputStreamReader;
  *
  */
 public class FtpServerThread extends Thread {
-	
+
 	//Thread properties
 	private Socket cliSocket;
 	private boolean cliThreadRunning = true;
-	
+
 	//User properties
 	private DataOutputStream controlOutWriter;
 	private BufferedReader controlIn;
-	private userStatus currentUserStatus = userStatus.NOTLOGGEDIN;
+	private UserStatus userStatus = UserStatus.NotLoggedIn;
 	private String username = "";
 	
 	//Paths properties
 	private String currentDIR;
 	private String ROOT;
 	private final String FILESEPARATOR = "/";
-	
+
 	/**
 	 * Construct a thread by default
 	 */
@@ -73,8 +73,8 @@ public class FtpServerThread extends Thread {
 			// Greeting
 			printMsg("220 service ready");
 
-			USER(controlIn.readLine());
-			PASS(controlIn.readLine());
+			user(controlIn.readLine());
+			pass(controlIn.readLine());
 
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
@@ -103,19 +103,19 @@ public class FtpServerThread extends Thread {
 		String[] entireLine = readLine.split(" ");
 		String command = entireLine[0];
 		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
-				
+
 		switch (command.toLowerCase()) {
-		case "username":
-			USER(args[0]);
+		case "user":
+			user(args[0]);
 			break;
-		case "password":
-			PASS(args[0]);
+		case "pass":
+			pass(args[0]);
 			break;
 		case "dir":
 			if (args[0].isEmpty()) {
-				DIR("");
+				dir("");
 			}else {
-				DIR(args[0]);
+				dir(args[0]);
 			}			
 			break;
 		case "get":
@@ -125,7 +125,7 @@ public class FtpServerThread extends Thread {
 		case "cd":
 			break;
 		case "quit":
-			QUIT();
+			quit();
 			break;
 
 		default:
@@ -137,15 +137,18 @@ public class FtpServerThread extends Thread {
 	 * DIR method. Get a list of the given directory
 	 * @param path - path to the directory to list
 	 */
+	private void dir(String path) {
+		
+		
 	private void DIR(String path) {
 		String filename = currentDIR;
         if (path != null)
         {
             filename = filename + FILESEPARATOR + path;
         }
-        
-        String content[] = getContent(filename);        
-        
+
+        String content[] = getContent(filename);
+
         if(content == null) {
         	printMsg("550 File does not exist");
         }else {
@@ -155,7 +158,7 @@ public class FtpServerThread extends Thread {
 			}
         	printMsg("226 Transfer complete");
         }
-        
+
 	}
 
 	/**
@@ -165,7 +168,7 @@ public class FtpServerThread extends Thread {
 	 */
 	private String[] getContent (String filename){
 		File file = new File(filename);
-        
+
 		if(file.exists() && file.isFile()) {
         	return file.list();
         }else if (file.exists() && file.isDirectory()) {
@@ -180,15 +183,16 @@ public class FtpServerThread extends Thread {
 	 * USER method. Log the user if included in csv file
 	 * @param username - username
 	 */
-	private void USER(String username) {
+	private void user(String username) {
 		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
 		username = username.split(" ")[1];
-		if(csvReader.checkUserName(username)) {
+
+		if (userStatus == userStatus.LoggedIn) {
+			printMsg("530 User already logged in");
+		} else if(csvReader.checkUserName(username)) {
 			printMsg("331 User name ok, need password");
 			this.username = username;
-			currentUserStatus = userStatus.ENTEREDUSERNAME;
-		}else if (currentUserStatus == userStatus.LOGGEDIN) {
-			printMsg("530 User already logged in");
+			userStatus = userStatus.EnteredUserName;
 		}else {
 			printMsg("530 Not logged in");
 		}
@@ -198,20 +202,21 @@ public class FtpServerThread extends Thread {
 	 * PASS method. Check if the given password correspond to the past given user in CSV file
 	 * @param password - password
 	 */
-	private void PASS(String password) {
+	private void pass(String password) {
 		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
 		password = password.split(" ")[1];
-		if(currentUserStatus == userStatus.ENTEREDUSERNAME && csvReader.checkPassword(this.username, password)) {
-			currentUserStatus = userStatus.LOGGEDIN;
-			printMsg("230 User logged in");
-		}else if (currentUserStatus == userStatus.LOGGEDIN) {
+
+		if (userStatus == userStatus.LoggedIn) {
 			printMsg("530 User already logged in");
+		}else if(userStatus == userStatus.EnteredUserName && csvReader.checkPassword(this.username, password)) {
+			userStatus = userStatus.LoggedIn;
+			printMsg("230 User logged in");
 		}else {
 			printMsg("530 Not logged in");
 		}
 	}
 	
-	private void QUIT() {
+	private void quit() {
 		printMsg("221 Closing connection");
 		cliThreadRunning = false;
 	}

@@ -1,5 +1,5 @@
 package main;
 
 public enum Commands {
-    dir, get, put, cd, user, pass
+    user, pass, dir, get, put, cd, quit
 }

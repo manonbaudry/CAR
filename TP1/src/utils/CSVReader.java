@@ -25,7 +25,6 @@ public class CSVReader {
                     return true;
             }
             bufferedReader.close();
-            return false;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,7 +40,6 @@ public class CSVReader {
                     return true;
             }
             bufferedReader.close();
-            return false;
         } catch (IOException e) {
             e.printStackTrace();
         }
