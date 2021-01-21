@@ -14,6 +14,13 @@ import java.io.InputStreamReader;
 public class FtpServerThread extends Thread {
 	private Socket cliSocket;
 	private boolean cliThreadRunning = true;
+	
+	private enum userStatus {
+		NOTLOGGEDIN, ENTEREDUSERNAME, LOGGEDIN
+	}
+	
+	private userStatus currentUserStatus = userStatus.NOTLOGGEDIN;
+	
 	/**
 	 * Construct a thread by default
 	 */
@@ -36,7 +43,7 @@ public class FtpServerThread extends Thread {
 		DataOutputStream controlOutWriter;
 		BufferedReader controlIn;
 
-		System.out.println("Accepted Client Address - " + cliSocket.getInetAddress().getHostName());
+		//System.out.println("Accepted Client Address - " + cliSocket.getInetAddress().getHostName());
 
 		try {
 			// Input from client
@@ -49,7 +56,11 @@ public class FtpServerThread extends Thread {
 			controlOutWriter.writeBytes("220 service ready\r\n");
 			controlOutWriter.flush();
 
-
+			while(cliThreadRunning) {
+				interpreteCommand(controlIn.readLine());
+			}
+			
+			
 			// Authenticates the user
 			String userName = controlIn.readLine();
 			if(!userName.equals("USER toto")) {
@@ -69,5 +80,24 @@ public class FtpServerThread extends Thread {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+	
+	/**
+	 * Switch/case of the user entry. Send to the corresponding command.
+	 * @param readLine - the user's entry
+	 */
+	private void interpreteCommand(String readLine) {
+		// TODO Auto-generated method stub
+		String[] entireLine = readLine.split(" ");
+		String command = entireLine[0];
+		
+		String[] args = entireLine; //!remove [0]
+		
+		//System.out.println(sortie[0]);
+	}
+	
+	public static void main(String[] args) {
+		FtpServerThread st = new FtpServerThread();
+		st.interpreteCommand("bonjour brice");
 	}
 }
