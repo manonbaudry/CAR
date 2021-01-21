@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 
 
 /**
@@ -83,7 +82,7 @@ public class FtpServerThread extends Thread {
 		try {
 			if (dataConnection == null || dataConnection.isClosed())
 	        {
-	            printMsg("425 No data connection was established");
+	            printMsg("425 Can't open data connection.");
 	        }else{
 	        	dataOutWriter.writeBytes(msg+"\r\n");
 	        	dataOutWriter.flush();
@@ -102,7 +101,6 @@ public class FtpServerThread extends Thread {
 			dataSocket = new ServerSocket(port);
 			dataConnection = dataSocket.accept();
 			dataOutWriter = new DataOutputStream(dataConnection.getOutputStream());
-			System.out.println("data connecté"); //TODO remove
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -196,7 +194,7 @@ public class FtpServerThread extends Thread {
 			break;
 
 		default:
-			printMsg("501 Unknown command");
+			printMsg("501 Syntax error in parameters or arguments.");
 		}
 	}
 	
@@ -337,8 +335,7 @@ public class FtpServerThread extends Thread {
 		if (dataConnection == null || dataConnection.isClosed()){
 	            openDataConnection(dataPort);
 	    }
-		
-		
+				
 		String filename = currentDIR;
         
 		if (path != null)
