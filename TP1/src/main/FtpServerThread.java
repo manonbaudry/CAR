@@ -177,11 +177,7 @@ public class FtpServerThread extends Thread {
 			pass(args[0]);
 			break;
 		case "dir":
-			if (args[0].isEmpty()) {
-				dir("");
-			}else {
-				dir(args[0]);
-			}			
+			dir(args[0]);			
 			break;
 		case "get":
 			break;
