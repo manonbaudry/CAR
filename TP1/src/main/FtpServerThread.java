@@ -1,5 +1,7 @@
 package main;
 
+import utils.CSVReader;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,13 +20,8 @@ public class FtpServerThread extends Thread {
 	private boolean cliThreadRunning = true;
 	private DataOutputStream controlOutWriter;
 	private BufferedReader controlIn;
-	
-	
-	private enum userStatus {
-		NOTLOGGEDIN, ENTEREDUSERNAME, LOGGEDIN
-	}
-	
 	private userStatus currentUserStatus = userStatus.NOTLOGGEDIN;
+	private String username = "";
 	
 	/**
 	 * Construct a thread by default
@@ -54,10 +51,6 @@ public class FtpServerThread extends Thread {
 	 * Run the exe of a thread.
 	 */
 	public void run() {
-
-
-		//System.out.println("Accepted Client Address - " + cliSocket.getInetAddress().getHostName());
-
 		try {
 			// Input from client
 			controlIn = new BufferedReader(new InputStreamReader(cliSocket.getInputStream()));
@@ -67,6 +60,9 @@ public class FtpServerThread extends Thread {
 
 			// Greeting
 			printMsg("220 service ready");
+
+			USER(controlIn.readLine());
+			PASS(controlIn.readLine());
 
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
@@ -92,7 +88,6 @@ public class FtpServerThread extends Thread {
 	 * @param readLine - the user's entry
 	 */
 	private void interpreteCommand(String readLine) {
-		// TODO Auto-generated method stub
 		String[] entireLine = readLine.split(" ");
 		String command = entireLine[0];
 		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
@@ -140,8 +135,11 @@ public class FtpServerThread extends Thread {
 	 * @param username - username
 	 */
 	private void USER(String username) {
-		if(username) {
+		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
+		username = username.split(" ")[1];
+		if(csvReader.checkUserName(username)) {
 			printMsg("331 User name ok, need password");
+			this.username = username;
 			currentUserStatus = userStatus.ENTEREDUSERNAME;
 		}else if (currentUserStatus == userStatus.LOGGEDIN) {
 			printMsg("530 User already logged in");
@@ -155,7 +153,9 @@ public class FtpServerThread extends Thread {
 	 * @param password - password
 	 */
 	private void PASS(String password) {
-		if(currentUserStatus == userStatus.ENTEREDUSERNAME) {
+		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
+		password = password.split(" ")[1];
+		if(currentUserStatus == userStatus.ENTEREDUSERNAME && csvReader.checkPassword(this.username, password)) {
 			currentUserStatus = userStatus.LOGGEDIN;
 			printMsg("230 User logged in");
 		}else if (currentUserStatus == userStatus.LOGGEDIN) {
@@ -169,5 +169,4 @@ public class FtpServerThread extends Thread {
 		printMsg("221 Closing connection");
 		cliThreadRunning = false;
 	}
-		
 }

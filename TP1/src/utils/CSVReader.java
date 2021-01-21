@@ -16,7 +16,23 @@ public class CSVReader {
         }
     }
 
-    public boolean authentication(String username, String pwd){
+    public boolean checkUserName(String username){
+        try {
+            String row;
+            while((row = bufferedReader.readLine()) != null) {
+                String[] data = row.split(",");
+                if(data.length > 0 && data[0].equals(username))
+                    return true;
+            }
+            bufferedReader.close();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean checkPassword(String username, String pwd){
         try {
             String row;
             while((row = bufferedReader.readLine()) != null) {
@@ -28,8 +44,7 @@ public class CSVReader {
             return false;
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            return false;
         }
+            return false;
     }
 }
