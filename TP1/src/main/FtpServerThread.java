@@ -74,6 +74,15 @@ public class FtpServerThread extends Thread {
 						
 		} catch (Exception e) {
 			System.out.println(e);
+		}finally{
+			try {
+				controlIn.close();
+				controlOutWriter.close();
+				cliSocket.close();
+				System.out.println("Cli stopped.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -88,9 +97,23 @@ public class FtpServerThread extends Thread {
 		String command = entireLine[0];
 		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
 				
-		switch (command.toUpperCase()) {
-		case "USER":
+		switch (command.toLowerCase()) {
+		case "username":
 			USER(args[0]);
+			break;
+		case "password":
+			PASS(args[0]);
+			break;
+		case "dir":
+			break;
+		case "get":
+			break;
+		case "put":
+			break;
+		case "cd":
+			break;
+		case "quit":
+			QUIT();
 			break;
 
 		default:
@@ -126,6 +149,11 @@ public class FtpServerThread extends Thread {
 		}else {
 			printMsg("530 Not logged in");
 		}
+	}
+	
+	private void QUIT() {
+		printMsg("221 Closing connection");
+		cliThreadRunning = false;
 	}
 		
 }
