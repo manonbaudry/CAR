@@ -52,7 +52,6 @@ public class FtpServerThread extends Thread {
 
 			// Authenticates the user
 			String userName = controlIn.readLine();
-			System.out.println(userName);
 			if(!userName.equals("USER toto")) {
 				System.out.println("Wrong username");
 				System.exit(-1);
@@ -60,7 +59,6 @@ public class FtpServerThread extends Thread {
 
 			controlOutWriter.writeBytes("331 User name ok, need password\r\n");
 			String pwd = controlIn.readLine();
-			System.out.println(pwd);
 
 			if(!pwd.equals("PASS toto")){
 				System.out.println("Wrong password");
