@@ -184,6 +184,7 @@ public class FtpServerThread extends Thread {
 		case "get":
 			break;
 		case "put":
+			put(args[0]);
 			break;
 		case "cd":
 			break;
