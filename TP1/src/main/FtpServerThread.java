@@ -40,6 +40,15 @@ public class FtpServerThread extends Thread {
 	public FtpServerThread(Socket client) {
 		cliSocket = client;
 	}
+	
+	private void printMsg(String msg) {
+		try {
+			controlOutWriter.writeBytes(msg+"\r\n");
+			controlOutWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Run the exe of a thread.
@@ -62,26 +71,30 @@ public class FtpServerThread extends Thread {
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
 			}
-			
-			
-			// Authenticates the user
-			String userName = controlIn.readLine();
-			if(!userName.equals("USER toto")) {
-				System.out.println("Wrong username");
-				System.exit(-1);
-			}
-
-			
-			String pwd = controlIn.readLine();
-
-			if(!pwd.equals("PASS toto")){
-				System.out.println("Wrong password");
-				System.exit(-1);
-			}
-			printMsg("230 User logged in");
-
+						
 		} catch (Exception e) {
 			System.out.println(e);
+		}
+	}
+	
+	
+	/**
+	 * Switch/case of the user entry. Send to the corresponding command.
+	 * @param readLine - the user's entry
+	 */
+	private void interpreteCommand(String readLine) {
+		// TODO Auto-generated method stub
+		String[] entireLine = readLine.split(" ");
+		String command = entireLine[0];
+		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
+				
+		switch (command.toUpperCase()) {
+		case "USER":
+			USER(args[0]);
+			break;
+
+		default:
+			printMsg("501 Unknown command");
 		}
 	}
 	
@@ -114,38 +127,5 @@ public class FtpServerThread extends Thread {
 			printMsg("530 Not logged in");
 		}
 	}
-	
-	/**
-	 * Switch/case of the user entry. Send to the corresponding command.
-	 * @param readLine - the user's entry
-	 */
-	private void interpreteCommand(String readLine) {
-		// TODO Auto-generated method stub
-		String[] entireLine = readLine.split(" ");
-		String command = entireLine[0];
-		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
-				
-		switch (command.toUpperCase()) {
-		case "USER":
-			USER(args[0]);
-			break;
-
-		default:
-			printMsg("501 Unknown command");
-		}
-	}
-	
-	private void printMsg(String msg) {
-		try {
-			controlOutWriter.writeBytes(msg+"\r\n");
-			controlOutWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void main(String[] args) {
-		FtpServerThread a= new FtpServerThread();
-		a.interpreteCommand("bonjour le monde");
-	}
+		
 }
