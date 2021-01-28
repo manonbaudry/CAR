@@ -17,7 +17,7 @@ public class Messages {
     public static final String MSG_226_COMPLETE = "226 Transfer complete";
     public static final String MSG_125 = "125 Opening ASCII mode data connection for file list";
 
-    public static final String MSG_229 = "229 Entering Extended Passive Mode (port).\r\n";
+    public static final String MSG_227 = "227 Entering Extended Passive Mode (port).\r\n";
 
     public static final String MSG_530_NOT = "530 Not logged in";
     public static final String MSG_530_ALREADY = "530 User already logged in";

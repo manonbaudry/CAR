@@ -47,13 +47,6 @@ public class FtpServerThread extends Thread {
 	private final String FILE_SEPARATOR = "/";
 
 	/**
-	 * Construct a thread by default
-	 */
-	public FtpServerThread() {
-		super();
-	}
-
-	/**
 	 * Initiate the client to our class
 	 * @param client - the client to map
 	 */
@@ -62,7 +55,7 @@ public class FtpServerThread extends Thread {
 		this.cliSocket = client;
 		this.dataPort = dataPort;
 		this.ROOT = System.getProperty("user.dir");
-		this.currentDIR = ROOT + "/CAR";
+		this.currentDIR = ROOT;
 	}
 
 	/**
@@ -74,7 +67,7 @@ public class FtpServerThread extends Thread {
 			controlOutWriter.writeBytes(msg+"\r\n");
 			controlOutWriter.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("error while printing message");;
 		}
 	}
 
@@ -84,14 +77,10 @@ public class FtpServerThread extends Thread {
 	 */
 	private void printDataMsg(String msg) {
 		try {
-			if (dataConnection == null || dataConnection.isClosed()) {
-				printMsg(Messages.MSG_425);
-			}else{
-				dataOutWriter.writeBytes(msg+"\r\n");
-				dataOutWriter.flush();
-			}
+			dataOutWriter.writeBytes(msg);
+			dataOutWriter.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("error while printing data message");;
 		}
 	}
 
@@ -122,9 +111,6 @@ public class FtpServerThread extends Thread {
 			System.out.println("Error, could not close data connection");
 			System.out.println(e);
 		}
-		dataOutWriter = null;
-		dataConnection = null;
-		dataSocket = null;
 	}
 
 	/**
@@ -150,8 +136,11 @@ public class FtpServerThread extends Thread {
 				String[] req = commandLine.split("\\|");
 				int port = Integer.parseInt(req[req.length-1]);
 				String addr = req[req.length-2];
-				printMsg(Messages.MSG_229.replace("port", req[req.length-1]));
+				printMsg(Messages.MSG_227.replace("port", req[req.length-1]));
+
 				this.dataConnection = new Socket(addr, port);
+				this.dataPort = port;
+				dataOutWriter = new DataOutputStream(dataConnection.getOutputStream());
 			}
 
 			while(cliThreadRunning) {
@@ -174,34 +163,37 @@ public class FtpServerThread extends Thread {
 		}
 	}
 
-
 	/**
 	 * Switch/case of the user entry. Send to the corresponding command.
 	 * @param readLine - the user's entry
 	 */
 	private void interpreteCommand(String readLine) {
-		String[] entireLine = readLine.split(" ");
-		String command = entireLine[0];
-		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
+//		String[] entireLine = readLine.split(" ");
+//		String command = entireLine[0];
+//		String args = null;
+//		if(entireLine.length > 0)
+//			args =  entireLine[1];
+		String command = readLine;
+		String args = "";
 
 		switch (command.toLowerCase()) {
 			case "user":
-				user(args[0]);
+				user(args);
 				break;
 			case "pass":
-				pass(args[0]);
+				pass(args);
 				break;
-			case "dir":
-				dir(args[0]);
+			case "list":
+				dir(args);
 				break;
 			case "get":
-				get(args[0]);
+				get(args);
 				break;
 			case "put":
-				put(args[0]);
+				put(args);
 				break;
 			case "cd":
-				cd(args[0]);
+				cd(args);
 				break;
 			case "quit":
 				quit();
@@ -334,9 +326,9 @@ public class FtpServerThread extends Thread {
 			for (String e : content) {
 				printDataMsg(e);
 			}
+			closeDataConnection();
 			printMsg(Messages.MSG_226_COMPLETE);
 		}
-		closeDataConnection();
 	}
 
 	/**
