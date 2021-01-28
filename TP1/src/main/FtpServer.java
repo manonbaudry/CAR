@@ -11,7 +11,7 @@ import java.net.Socket;
 public class FtpServer {
     private int serverPort = 1010;
     private ServerSocket serverSocket;
-    boolean running = false;
+    boolean running;
     
     /**
      * Constructor.

@@ -82,7 +82,7 @@ public class FtpServerThread extends Thread {
 		try {
 			if (dataConnection == null || dataConnection.isClosed())
 	        {
-	            printMsg("425 Can't open data connection.");
+	            printMsg(Messages.MSG_425);
 	        }else{
 	        	dataOutWriter.writeBytes(msg+"\r\n");
 	        	dataOutWriter.flush();
@@ -137,10 +137,18 @@ public class FtpServerThread extends Thread {
 			controlOutWriter = new DataOutputStream(cliSocket.getOutputStream());
 
 			// Greeting
-			printMsg("220 service ready");
+			printMsg(Messages.MSG_220);
 
 			user(controlIn.readLine());
 			pass(controlIn.readLine());
+
+			String commandLine = controlIn.readLine();
+			String[] req = commandLine.split("\\|");
+			int port = Integer.parseInt(req[req.length-1]);
+			String addr = req[req.length-2];
+			//this.session.sendMessage(MessageType.MESSAGE_229.replace("port", req[req.length-1]));
+			this.dataConnection = new Socket(addr, port);
+
 
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
@@ -194,7 +202,7 @@ public class FtpServerThread extends Thread {
 			break;
 
 		default:
-			printMsg("501 Syntax error in parameters or arguments.");
+			printMsg(Messages.MSG_501);
 		}
 	}
 	
@@ -217,9 +225,9 @@ public class FtpServerThread extends Thread {
 		File f = new File(filename);
 		if(f.exists() && f.isDirectory() && (filename.length() >= ROOT.length())) {
 			currentDIR = filename;
-			printMsg("250 Requested file action okay, completed.");
+			printMsg(Messages.MSG_250);
 		}else {
-			printMsg("550 Requested action not taken. File unavailable");
+			printMsg(Messages.MSG_550_UNAVAILABLE);
 		}
 	}
 	
@@ -235,10 +243,10 @@ public class FtpServerThread extends Thread {
 			
 		File f = new File(currentDIR + FILESEPARATOR + file);
 		if(!f.exists()) {
-			printMsg("550 File does not exist");
+			printMsg(Messages.MSG_550_NOT);
 		}else{
 			
-			 printMsg("150 Opening ASCII mode data connection for requested file " + f.getName());
+			 printMsg(Messages.MSG_150 + f.getName());
 		     BufferedReader in = null;
 		     DataOutputStream out = null;
 		     
@@ -267,7 +275,7 @@ public class FtpServerThread extends Thread {
 				System.out.println("Error close entry stream");
 				System.out.println(e);
 			}
-		    printMsg("226 Closing data connection. Requested file action successful.");
+		    printMsg(Messages.MSG_226_CLOSE);
 		}
 		closeDataConnection();
 	}	
@@ -283,14 +291,14 @@ public class FtpServerThread extends Thread {
 		}
 				
 		if (file == null) {
-			printMsg("501 No filename given");
+			printMsg(Messages.MSG_501_NO_FILENAME);
 		}else {
 			File f = new File(currentDIR + FILESEPARATOR + file);
 			if(f.exists()) {
-				printMsg("550 File already exists");
+				printMsg(Messages.MSG_550_ALREADY );
 			}else{
 					
-				 printMsg("150 Opening ASCII mode data connection for requested file " + f.getName());
+				 printMsg(Messages.MSG_150 + f.getName());
 			     BufferedReader in = null;
 			     DataOutputStream out = null;
 			     
@@ -320,7 +328,7 @@ public class FtpServerThread extends Thread {
 					System.out.println("Error close entry stream");
 					System.out.println(e);
 				}
-			    printMsg("226 Closing data connection. Requested file action successful.");
+			    printMsg(Messages.MSG_226_CLOSE);
 			}
 		}
 		closeDataConnection();
@@ -346,13 +354,13 @@ public class FtpServerThread extends Thread {
         String content[] = getContent(filename);
 
         if(content == null) {
-        	printMsg("550 File does not exist");
+        	printMsg(Messages.MSG_550_NOT);
         }else {
-        	printMsg("125 Opening ASCII mode data connection for file list");
+        	printMsg(Messages.MSG_125);
         	for (String e : content) {
 				printDataMsg(e);
 			}
-        	printMsg("226 Transfer complete");
+        	printMsg(Messages.MSG_226_COMPLETE);
         }
         
         closeDataConnection();
@@ -385,13 +393,13 @@ public class FtpServerThread extends Thread {
 		username = username.split(" ")[1];
 
 		if (userStatus == UserStatus.LoggedIn) {
-			printMsg("530 User already logged in");
+			printMsg(Messages.MSG_530_ALREADY);
 		} else if(csvReader.checkUserName(username)) {
-			printMsg("331 User name ok, need password");
+			printMsg(Messages.MSG_331);
 			this.username = username;
 			userStatus = UserStatus.EnteredUserName;
 		}else {
-			printMsg("530 Not logged in");
+			printMsg(Messages.MSG_530_NOT);
 		}
 	}
 	
@@ -404,17 +412,17 @@ public class FtpServerThread extends Thread {
 		password = password.split(" ")[1];
 
 		if (userStatus == UserStatus.LoggedIn) {
-			printMsg("530 User already logged in");
+			printMsg(Messages.MSG_530_ALREADY);
 		}else if(userStatus == UserStatus.EnteredUserName && csvReader.checkPassword(this.username, password)) {
 			userStatus = UserStatus.LoggedIn;
-			printMsg("230 User logged in");
+			printMsg(Messages.MSG_230);
 		}else {
-			printMsg("530 Not logged in");
+			printMsg(Messages.MSG_530_NOT);
 		}
 	}
 	
 	private void quit() {
-		printMsg("221 Closing connection");
+		printMsg(Messages.MSG_221);
 		cliThreadRunning = false;
 	}
 }
