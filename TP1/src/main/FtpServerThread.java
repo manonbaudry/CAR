@@ -145,20 +145,19 @@ public class FtpServerThread extends Thread {
 			user(controlIn.readLine().split(" ")[1]);
 			pass(controlIn.readLine().split(" ")[1]);
 
-
-//			String commandLine = controlIn.readLine();
-//			String[] req = commandLine.split("\\|");
-//			int port = Integer.parseInt(req[req.length-1]);
-//			String addr = req[req.length-2];
-//			printMsg(Messages);
-////this.session.sendMessage(MessageType.MESSAGE_229.replace("port", req[req.length-1]));
-//			this.dataConnection = new Socket(addr, port);
+			if(System.getProperty("os.name").equals("Mac OS X")){
+				String commandLine = controlIn.readLine();
+				String[] req = commandLine.split("\\|");
+				int port = Integer.parseInt(req[req.length-1]);
+				String addr = req[req.length-2];
+				printMsg(Messages.MSG_229.replace("port", req[req.length-1]));
+				this.dataConnection = new Socket(addr, port);
+			}
 
 			while(cliThreadRunning) {
 				command = controlIn.readLine();
 				System.out.println(command);
 				interpreteCommand(command);
-
 			}
 
 		} catch (Exception e) {
