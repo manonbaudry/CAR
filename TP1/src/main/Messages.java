@@ -18,7 +18,6 @@ public class Messages {
 
     public static final String MSG_530_NOT = "530 Not logged in";
     public static final String MSG_530_ALREADY = "530 User already logged in";
-
     public static final String MSG_331 = "331 User name ok, need password";
     public static final String MSG_230 = "230 User logged in";
     public static final String MSG_221 = "221 Closing connection";

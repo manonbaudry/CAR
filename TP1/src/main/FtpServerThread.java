@@ -23,6 +23,8 @@ public class FtpServerThread extends Thread {
 
 	//Thread properties
 	private Socket cliSocket;
+
+	//Control loop, changed by QUIT command to stop the thread
 	private boolean cliThreadRunning = true;
 
 	//User properties
@@ -30,13 +32,13 @@ public class FtpServerThread extends Thread {
 	private BufferedReader controlIn;
 	private UserStatus userStatus = UserStatus.NotLoggedIn;
 	private String username = "";
-	
+
 	//Data properties 
 	private ServerSocket dataSocket;
 	private Socket dataConnection;
 	private int dataPort;
 	private DataOutputStream dataOutWriter;
-	
+
 	//Paths properties
 	private String currentDIR;
 	private String ROOT;
@@ -60,7 +62,7 @@ public class FtpServerThread extends Thread {
 		this.ROOT = System.getProperty("user.dir");
 		this.currentDIR = ROOT + "/CAR";
 	}
-	
+
 	/**
 	 * Print a message via the control connection
 	 * @param msg - the message to send 
@@ -73,25 +75,24 @@ public class FtpServerThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Print a message via the data connection
 	 * @param msg - the message to send
 	 */
 	private void printDataMsg(String msg) {
 		try {
-			if (dataConnection == null || dataConnection.isClosed())
-	        {
-	            printMsg(Messages.MSG_425);
-	        }else{
-	        	dataOutWriter.writeBytes(msg+"\r\n");
-	        	dataOutWriter.flush();
-	        }
+			if (dataConnection == null || dataConnection.isClosed()) {
+				printMsg(Messages.MSG_425);
+			}else{
+				dataOutWriter.writeBytes(msg+"\r\n");
+				dataOutWriter.flush();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Open a data connection socket 
 	 * @param port - which port to listen for incoming connection
@@ -105,7 +106,7 @@ public class FtpServerThread extends Thread {
 			System.out.println(e);
 		}
 	}
-	
+
 	/**
 	 * Close the opened data connection
 	 */
@@ -119,7 +120,6 @@ public class FtpServerThread extends Thread {
 			System.out.println("Error, could not close data connection");
 			System.out.println(e);
 		}
-		
 		dataOutWriter = null;
 		dataConnection = null;
 		dataSocket = null;
@@ -142,18 +142,10 @@ public class FtpServerThread extends Thread {
 			user(controlIn.readLine());
 			pass(controlIn.readLine());
 
-			String commandLine = controlIn.readLine();
-			String[] req = commandLine.split("\\|");
-			int port = Integer.parseInt(req[req.length-1]);
-			String addr = req[req.length-2];
-			//this.session.sendMessage(MessageType.MESSAGE_229.replace("port", req[req.length-1]));
-			this.dataConnection = new Socket(addr, port);
-
-
 			while(cliThreadRunning) {
 				interpreteCommand(controlIn.readLine());
 			}
-						
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}finally{
@@ -167,8 +159,8 @@ public class FtpServerThread extends Thread {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Switch/case of the user entry. Send to the corresponding command.
 	 * @param readLine - the user's entry
@@ -179,40 +171,40 @@ public class FtpServerThread extends Thread {
 		String[] args =  Arrays.copyOfRange(entireLine, 1, entireLine.length);
 
 		switch (command.toLowerCase()) {
-		case "user":
-			user(args[0]);
-			break;
-		case "pass":
-			pass(args[0]);
-			break;
-		case "dir":
-			dir(args[0]);			
-			break;
-		case "get":
-			get(args[0]);
-			break;
-		case "put":
-			put(args[0]);
-			break;
-		case "cd":
-			cd(args[0]);
-			break;
-		case "quit":
-			quit();
-			break;
+			case "user":
+				user(args[0]);
+				break;
+			case "pass":
+				pass(args[0]);
+				break;
+			case "dir":
+				dir(args[0]);
+				break;
+			case "get":
+				get(args[0]);
+				break;
+			case "put":
+				put(args[0]);
+				break;
+			case "cd":
+				cd(args[0]);
+				break;
+			case "quit":
+				quit();
+				break;
 
-		default:
-			printMsg(Messages.MSG_501);
+			default:
+				printMsg(Messages.MSG_501);
 		}
 	}
-	
+
 	/**
 	 * CD Method. Change working directory
 	 * @param dir - the dir to move to.
 	 */
 	private void cd(String dir) {
 		String filename = currentDIR;
-		
+
 		if(dir.equals("..")) {
 			int ind = filename.lastIndexOf(FILESEPARATOR);
 			if (ind > 0) {
@@ -221,7 +213,7 @@ public class FtpServerThread extends Thread {
 		}else if(dir!=null && !dir.equals(".")) {
 			filename = filename + FILESEPARATOR + dir;
 		}
-		
+
 		File f = new File(filename);
 		if(f.exists() && f.isDirectory() && (filename.length() >= ROOT.length())) {
 			currentDIR = filename;
@@ -230,140 +222,107 @@ public class FtpServerThread extends Thread {
 			printMsg(Messages.MSG_550_UNAVAILABLE);
 		}
 	}
-	
+
 	/**
 	 * GET method. Get a file from FTP to client
 	 * @param file - the file to get
 	 */
 	private void get(String file) {
-		
-		if (dataConnection == null || dataConnection.isClosed()){
-            openDataConnection(dataPort);
-		}
-			
-		File f = new File(currentDIR + FILESEPARATOR + file);
-		if(!f.exists()) {
-			printMsg(Messages.MSG_550_NOT);
-		}else{
-			
-			 printMsg(Messages.MSG_150 + f.getName());
-		     BufferedReader in = null;
-		     DataOutputStream out = null;
-		     
-		    try{
-		    	 in = new BufferedReader(new FileReader(f));
-		    	 out = new DataOutputStream(dataConnection.getOutputStream());
-			} catch (Exception e) {
-				System.out.println("Error create entry stream");
-				System.out.println(e);
+		try {
+			if (dataConnection == null || dataConnection.isClosed()) {
+				openDataConnection(dataPort);
 			}
-		     
-		    String curr;
-		    try {
-				while((curr = in.readLine()) !=null) {
+			File f = new File(currentDIR + FILESEPARATOR + file);
+			if (!f.exists()) {
+				printMsg(Messages.MSG_550_NOT);
+			} else {
+				printMsg(Messages.MSG_150 + f.getName());
+				BufferedReader in = null;
+				DataOutputStream out = null;
+
+				in = new BufferedReader(new FileReader(f));
+				out = new DataOutputStream(dataConnection.getOutputStream());
+
+				String curr;
+
+				while ((curr = in.readLine()) != null) {
 					out.writeBytes(curr);
 				}
-			} catch (Exception e) {
-				System.out.println("Error read entry stream");
-				System.out.println(e);
-			}
-		    
-		    try {
-		    	out.close();
+				out.close();
 				in.close();
-			} catch (Exception e) {
-				System.out.println("Error close entry stream");
-				System.out.println(e);
+				printMsg(Messages.MSG_226_CLOSE);
 			}
-		    printMsg(Messages.MSG_226_CLOSE);
+		}catch(IOException e){
+			e.printStackTrace();
+			System.out.println("error GET");
 		}
 		closeDataConnection();
-	}	
-	
+	}
+
 	/**
 	 * PUT method. Save the given file to the FTP server 
 	 * @param file - the file to save on the server
 	 */
 	private void put(String file) {
-		
-		if (dataConnection == null || dataConnection.isClosed()){
-            openDataConnection(dataPort);
-		}
-				
-		if (file == null) {
-			printMsg(Messages.MSG_501_NO_FILENAME);
-		}else {
-			File f = new File(currentDIR + FILESEPARATOR + file);
-			if(f.exists()) {
-				printMsg(Messages.MSG_550_ALREADY );
-			}else{
-					
-				 printMsg(Messages.MSG_150 + f.getName());
-			     BufferedReader in = null;
-			     DataOutputStream out = null;
-			     
-			     try {
-			    	 in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
-			    	 out = new DataOutputStream(new FileOutputStream(file));
-				} catch (Exception e) {
-					System.out.println("Error create entry stream");
-					System.out.println(e);
-				}
-			     
-			    String curr;
-			    
-			    try {
+		try{
+			if (dataConnection == null || dataConnection.isClosed()){
+				openDataConnection(dataPort);
+			}
+			if (file == null) {
+				printMsg(Messages.MSG_501_NO_FILENAME);
+			}else {
+				File f = new File(currentDIR + FILESEPARATOR + file);
+				if(f.exists()) {
+					printMsg(Messages.MSG_550_ALREADY );
+				}else{
+					printMsg(Messages.MSG_150 + f.getName());
+					BufferedReader in = null;
+					DataOutputStream out = null;
+
+					in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
+					out = new DataOutputStream(new FileOutputStream(file));
+
+					String curr;
 					while((curr = in.readLine()) !=null) {
 						out.writeBytes(curr);
 					}
-				} catch (Exception e) {
-					System.out.println("Error read entry stream");
-					System.out.println(e);
-				}
-			    
-			    try {
-			    	out.close();
+					out.close();
 					in.close();
-				} catch (Exception e) {
-					System.out.println("Error close entry stream");
-					System.out.println(e);
+
+					printMsg(Messages.MSG_226_CLOSE);
 				}
-			    printMsg(Messages.MSG_226_CLOSE);
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error PUT");
 		}
 		closeDataConnection();
 	}
-	
+
 	/**
 	 * DIR method. Get a list of the given directory
 	 * @param path - path to the directory to list
 	 */
 	private void dir(String path) {
-		
 		if (dataConnection == null || dataConnection.isClosed()){
-	            openDataConnection(dataPort);
-	    }
-				
+			openDataConnection(dataPort);
+		}
 		String filename = currentDIR;
-        
-		if (path != null)
-        {
-            filename = filename + FILESEPARATOR + path;
-        }
 
-        String content[] = getContent(filename);
-
-        if(content == null) {
-        	printMsg(Messages.MSG_550_NOT);
-        }else {
-        	printMsg(Messages.MSG_125);
-        	for (String e : content) {
+		if (path != null) {
+			filename = filename + FILESEPARATOR + path;
+		}
+		String content[] = getContent(filename);
+		if(content == null) {
+			printMsg(Messages.MSG_550_NOT);
+		}else {
+			printMsg(Messages.MSG_125);
+			for (String e : content) {
 				printDataMsg(e);
 			}
-        	printMsg(Messages.MSG_226_COMPLETE);
-        }
-        
-        closeDataConnection();
+			printMsg(Messages.MSG_226_COMPLETE);
+		}
+		closeDataConnection();
 	}
 
 	/**
@@ -375,14 +334,14 @@ public class FtpServerThread extends Thread {
 		File file = new File(filename);
 
 		if(file.exists() && file.isFile()) {
-        	return file.list();
-        }else if (file.exists() && file.isDirectory()) {
-        	String[] fileInfos = new String[1];
-        	fileInfos[0] = file.getName();
-        	return fileInfos;
-        }else {
-        	return null;
-        }
+			return file.list();
+		}else if (file.exists() && file.isDirectory()) {
+			String[] fileInfos = new String[1];
+			fileInfos[0] = file.getName();
+			return fileInfos;
+		}else {
+			return null;
+		}
 	}
 	/**
 	 * USER method. Log the user if included in csv file
@@ -402,7 +361,7 @@ public class FtpServerThread extends Thread {
 			printMsg(Messages.MSG_530_NOT);
 		}
 	}
-	
+
 	/**
 	 * PASS method. Check if the given password correspond to the past given user in CSV file
 	 * @param password - password
@@ -420,7 +379,7 @@ public class FtpServerThread extends Thread {
 			printMsg(Messages.MSG_530_NOT);
 		}
 	}
-	
+
 	private void quit() {
 		printMsg(Messages.MSG_221);
 		cliThreadRunning = false;
