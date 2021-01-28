@@ -33,6 +33,8 @@ public class FtpServerThread extends Thread {
 	private UserStatus userStatus = UserStatus.NotLoggedIn;
 	private String username = "";
 
+	private final String CSV_PATH = "TP1/src/data/users.csv";
+
 	//Data properties 
 	private ServerSocket dataSocket;
 	private Socket dataConnection;
@@ -42,7 +44,7 @@ public class FtpServerThread extends Thread {
 	//Paths properties
 	private String currentDIR;
 	private String ROOT;
-	private final String FILESEPARATOR = "/";
+	private final String FILE_SEPARATOR = "/";
 
 	/**
 	 * Construct a thread by default
@@ -138,12 +140,25 @@ public class FtpServerThread extends Thread {
 
 			// Greeting
 			printMsg(Messages.MSG_220);
+			String command;
 
-			user(controlIn.readLine());
-			pass(controlIn.readLine());
+			user(controlIn.readLine().split(" ")[1]);
+			pass(controlIn.readLine().split(" ")[1]);
+
+
+//			String commandLine = controlIn.readLine();
+//			String[] req = commandLine.split("\\|");
+//			int port = Integer.parseInt(req[req.length-1]);
+//			String addr = req[req.length-2];
+//			printMsg(Messages);
+////this.session.sendMessage(MessageType.MESSAGE_229.replace("port", req[req.length-1]));
+//			this.dataConnection = new Socket(addr, port);
 
 			while(cliThreadRunning) {
-				interpreteCommand(controlIn.readLine());
+				command = controlIn.readLine();
+				System.out.println(command);
+				interpreteCommand(command);
+
 			}
 
 		} catch (Exception e) {
@@ -206,12 +221,12 @@ public class FtpServerThread extends Thread {
 		String filename = currentDIR;
 
 		if(dir.equals("..")) {
-			int ind = filename.lastIndexOf(FILESEPARATOR);
+			int ind = filename.lastIndexOf(FILE_SEPARATOR);
 			if (ind > 0) {
 				filename = filename.substring(0, ind);
 			}
 		}else if(dir!=null && !dir.equals(".")) {
-			filename = filename + FILESEPARATOR + dir;
+			filename = filename + FILE_SEPARATOR + dir;
 		}
 
 		File f = new File(filename);
@@ -232,7 +247,7 @@ public class FtpServerThread extends Thread {
 			if (dataConnection == null || dataConnection.isClosed()) {
 				openDataConnection(dataPort);
 			}
-			File f = new File(currentDIR + FILESEPARATOR + file);
+			File f = new File(currentDIR + FILE_SEPARATOR + file);
 			if (!f.exists()) {
 				printMsg(Messages.MSG_550_NOT);
 			} else {
@@ -271,7 +286,7 @@ public class FtpServerThread extends Thread {
 			if (file == null) {
 				printMsg(Messages.MSG_501_NO_FILENAME);
 			}else {
-				File f = new File(currentDIR + FILESEPARATOR + file);
+				File f = new File(currentDIR + FILE_SEPARATOR + file);
 				if(f.exists()) {
 					printMsg(Messages.MSG_550_ALREADY );
 				}else{
@@ -310,7 +325,7 @@ public class FtpServerThread extends Thread {
 		String filename = currentDIR;
 
 		if (path != null) {
-			filename = filename + FILESEPARATOR + path;
+			filename = filename + FILE_SEPARATOR + path;
 		}
 		String content[] = getContent(filename);
 		if(content == null) {
@@ -348,9 +363,7 @@ public class FtpServerThread extends Thread {
 	 * @param username - username
 	 */
 	private void user(String username) {
-		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
-		username = username.split(" ")[1];
-
+		CSVReader csvReader = new CSVReader(CSV_PATH);
 		if (userStatus == UserStatus.LoggedIn) {
 			printMsg(Messages.MSG_530_ALREADY);
 		} else if(csvReader.checkUserName(username)) {
@@ -367,9 +380,7 @@ public class FtpServerThread extends Thread {
 	 * @param password - password
 	 */
 	private void pass(String password) {
-		CSVReader csvReader = new CSVReader("TP1/src/data/users.csv");
-		password = password.split(" ")[1];
-
+		CSVReader csvReader = new CSVReader(CSV_PATH);
 		if (userStatus == UserStatus.LoggedIn) {
 			printMsg(Messages.MSG_530_ALREADY);
 		}else if(userStatus == UserStatus.EnteredUserName && csvReader.checkPassword(this.username, password)) {
