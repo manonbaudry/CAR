@@ -1,6 +1,7 @@
 package main;
 
 public class Messages {
+	public static final String MSG_215 = "215 NAME system type.";
     public static final String MSG_220 = "220 service ready";
     public static final String MSG_425 = "425 Can't open data connection.";
     public static final String MSG_501 = "501 Syntax error in parameters or arguments.";
