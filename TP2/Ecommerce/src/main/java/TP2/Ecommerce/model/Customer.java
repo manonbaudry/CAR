@@ -1,14 +1,18 @@
 package TP2.Ecommerce.model;
 
 import javax.persistence.*;
+import java.util.List;
 
-
+@Entity
 public class Customer {
     @Id
     @GeneratedValue
     private Long id;
     private String name;
     private String lastName;
+    private String mail;
+    @OneToMany
+    private List<Order> orders;
 
     public Long getId() {
         return id;
@@ -42,8 +46,11 @@ public class Customer {
         this.mail = mail;
     }
 
-    private String mail;
+    public List<Order> getOrders() {
+        return orders;
+    }
 
-
-
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 }
