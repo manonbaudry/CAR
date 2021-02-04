@@ -7,6 +7,7 @@ Par Baudry Manon & Despelchin Brice
 - Serveur multithread (multi-connexion autorisée)
 - Commandes:
 >Get, Dir, Put, User, Pass, Quit, Cd
+- connection utilisateur à partir d'un fichier
 
 ## Fonctionnalitées non implémentées## 
  - Voir https://fr.wikipedia.org/wiki/Liste_des_commandes_ftp

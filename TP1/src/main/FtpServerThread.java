@@ -137,12 +137,10 @@ public class FtpServerThread extends Thread {
 				int port = Integer.parseInt(req[req.length-1]);
 				String addr = req[req.length-2];
 				printMsg(Messages.MSG_227.replace("port", req[req.length-1]));
-
 				this.dataConnection = new Socket(addr, port);
 				this.dataPort = port;
 				dataOutWriter = new DataOutputStream(dataConnection.getOutputStream());
 			}
-
 			while(cliThreadRunning) {
 				command = controlIn.readLine();
 				System.out.println(command);
@@ -168,13 +166,11 @@ public class FtpServerThread extends Thread {
 	 * @param readLine - the user's entry
 	 */
 	private void interpreteCommand(String readLine) {
-//		String[] entireLine = readLine.split(" ");
-//		String command = entireLine[0];
-//		String args = null;
-//		if(entireLine.length > 0)
-//			args =  entireLine[1];
-		String command = readLine;
-		String args = "";
+		String[] entireLine = readLine.split(" ");
+		String command = entireLine[0];
+		String args = null;
+		if(entireLine.length > 0)
+			args =  entireLine[1];
 
 		switch (command.toLowerCase()) {
 			case "user":
@@ -282,19 +278,14 @@ public class FtpServerThread extends Thread {
 					printMsg(Messages.MSG_550_ALREADY );
 				}else{
 					printMsg(Messages.MSG_150 + f.getName());
-					BufferedReader in = null;
-					DataOutputStream out = null;
-
-					in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
-					out = new DataOutputStream(new FileOutputStream(file));
-
+					BufferedReader in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
+					DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
 					String curr;
 					while((curr = in.readLine()) !=null) {
 						out.writeBytes(curr);
 					}
 					out.close();
 					in.close();
-
 					printMsg(Messages.MSG_226_CLOSE);
 				}
 			}
