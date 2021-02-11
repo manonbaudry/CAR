@@ -1,4 +1,4 @@
-package TP2.Ecommerce.model;
+package entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +11,8 @@ public class Product {
     private Long id;
     private String name;
     private double price;
+
+    public Product() {}
 
     public Long getId() {
         return id;
@@ -33,6 +35,11 @@ public class Product {
     }
 
     public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public Product(String name, double price) {
+        this.name = name;
         this.price = price;
     }
 }
