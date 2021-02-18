@@ -1,15 +1,14 @@
 package com.tp2.ecommerce.entities;
 
 import lombok.Data;
-
+import lombok.RequiredArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.List;
 
 @Data
 @Entity
+@RequiredArgsConstructor
 public class Customer {
     @Id
     @GeneratedValue
@@ -17,6 +16,10 @@ public class Customer {
     private String name;
     private String lastName;
     private String mail;
-    @OneToMany
-    private List<Order> orders;
+
+    public Customer(String name, String lastName, String mail) {
+        this.name = name;
+        this.lastName = lastName;
+        this.mail = mail;
+    }
 }

@@ -1,18 +1,23 @@
 package com.tp2.ecommerce.entities;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
+@RequiredArgsConstructor
 public class Stock {
     @Id
     @GeneratedValue
     private Long id;
+    private int remainingProducts;
+    @OneToOne
+    private Product product;
 
-    @OneToMany
-    private List<Product> products;
-
+    public Stock(int remainingProducts, Product product) {
+        this.remainingProducts = remainingProducts;
+        this.product = product;
+    }
 }
