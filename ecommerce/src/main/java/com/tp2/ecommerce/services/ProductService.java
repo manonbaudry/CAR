@@ -1,8 +1,8 @@
-package services;
+package com.tp2.ecommerce.services;
 
-import entities.Product;
+import com.tp2.ecommerce.entities.Product;
 import org.springframework.beans.factory.annotation.Autowired;
-import repositories.ProductRepository;
+import com.tp2.ecommerce.repositories.ProductRepository;
 
 import java.util.List;
 

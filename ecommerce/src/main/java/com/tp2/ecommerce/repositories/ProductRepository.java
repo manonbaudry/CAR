@@ -1,6 +1,6 @@
-package repositories;
+package com.tp2.ecommerce.repositories;
 
-import entities.Product;
+import com.tp2.ecommerce.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
