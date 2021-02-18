@@ -19,7 +19,9 @@ public class EcommerceApplication {
     @Bean
     CommandLineRunner init(ProductRepository productRepository) {
         return args -> {
-            productRepository.save(new Product());
+            productRepository.save(new Product("lampe", 5));
+            productRepository.save(new Product("chaise", 15));
+
         };
     }
 }

@@ -12,19 +12,13 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-//    @Autowired
-//    private ProductService productService;
-//
-//    public ProductController(ProductService productService) {
-//        this.productService = productService;
-//    }
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @GetMapping(path = "/products")
     public @ResponseBody
     List<Product> getAll(){
-        return productRepository.findAll();
+        return productService.findAll();
     }
 
 }
