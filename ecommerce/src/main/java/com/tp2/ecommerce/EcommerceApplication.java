@@ -1,13 +1,7 @@
 package com.tp2.ecommerce;
 
-import com.tp2.ecommerce.entities.Customer;
-import com.tp2.ecommerce.entities.ProdOrder;
-import com.tp2.ecommerce.entities.Product;
-import com.tp2.ecommerce.entities.Stock;
-import com.tp2.ecommerce.repositories.CustomerRepository;
-import com.tp2.ecommerce.repositories.OrderRepository;
-import com.tp2.ecommerce.repositories.ProductRepository;
-import com.tp2.ecommerce.repositories.StockRepository;
+import com.tp2.ecommerce.entities.*;
+import com.tp2.ecommerce.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,7 +28,8 @@ public class EcommerceApplication {
      */
     @Bean
     CommandLineRunner init(ProductRepository productRepository, CustomerRepository customerRepository,
-                           StockRepository stockRepository, OrderRepository orderRepository) {
+                           StockRepository stockRepository, PurchaseRepository purchaseRepository,
+                           ProductOrderedRepository productOrderedRepository) {
         return args -> {
             List<Product> products = initializeProducts();
             productRepository.saveAll(products);
@@ -45,9 +40,21 @@ public class EcommerceApplication {
             List<Stock> stocks = initializeStocks(products);
             stockRepository.saveAll(stocks);
 
-            ProdOrder prodOrder1 = new ProdOrder(LocalDateTime.now(), customers.get(0), products);
-            orderRepository.save(prodOrder1);
+            List<ProductOrdered> productsOrdered = initializeProductsOrdered(products);
+            productOrderedRepository.saveAll(productsOrdered);
+
+            Purchase purchase1 = new Purchase(LocalDateTime.now(), customers.get(0), productsOrdered);
+            purchaseRepository.save(purchase1);
         };
+    }
+
+    private List<ProductOrdered> initializeProductsOrdered(List<Product> products) {
+        List<ProductOrdered> productsOrdered = new ArrayList<>();
+        ProductOrdered productOrdered1 = new ProductOrdered(products.get(0), 1);
+        ProductOrdered productOrdered2 = new ProductOrdered(products.get(1), 1);
+        productsOrdered.add(productOrdered1);
+        productsOrdered.add(productOrdered2);
+        return productsOrdered;
     }
 
     private List<Stock> initializeStocks(List<Product> products) {

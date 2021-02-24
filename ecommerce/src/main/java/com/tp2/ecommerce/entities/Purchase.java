@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
 @RequiredArgsConstructor
-public class ProdOrder {
+public class Purchase {
     @Id
     @GeneratedValue
     private Long id;
@@ -19,9 +18,9 @@ public class ProdOrder {
     @ManyToOne
     private Customer customer;
     @OneToMany
-    private List<Product> products;
+    private List<ProductOrdered> products;
 
-    public ProdOrder(LocalDateTime date, Customer customer, List<Product> products) {
+    public Purchase(LocalDateTime date, Customer customer, List<ProductOrdered> products) {
         this.date = date;
         this.customer = customer;
         this.products = products;
