@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.controllers;
 
 import com.tp2.ecommerce.entities.Purchase;
+import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.services.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class PurchaseController {
     }
 
     @GetMapping(path = "/{customerId}")
-    public List<Purchase> getCustomerRecord (@PathVariable("customerId") long customerId){
+    public List<Purchase> getCustomerRecord (@PathVariable("customerId") long customerId) throws IdNotFoundException {
         return purchaseService.getCustomerRecord(customerId);
     }
 

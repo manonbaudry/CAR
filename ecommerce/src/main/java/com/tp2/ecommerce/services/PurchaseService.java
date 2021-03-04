@@ -2,6 +2,7 @@ package com.tp2.ecommerce.services;
 
 import com.tp2.ecommerce.entities.Customer;
 import com.tp2.ecommerce.entities.Purchase;
+import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class PurchaseService {
         stockService.updateStock(purchase);
     }
 
-    public List<Purchase> getCustomerRecord(long customerId) {
+    public List<Purchase> getCustomerRecord(long customerId) throws IdNotFoundException {
         Customer customer = customerService.findById(customerId);
         return purchaseRepository.findByCustomer(customer);
     }

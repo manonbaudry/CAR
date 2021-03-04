@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.controllers;
 
 import com.tp2.ecommerce.entities.Customer;
+import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = "/{id}")
-    public Customer getById(@PathVariable("id") long id){
+    public Customer getById(@PathVariable("id") long id) throws IdNotFoundException {
         return customerService.findById(id);
     }
 
@@ -34,6 +35,12 @@ public class CustomerController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public String mailAlreadyExistHandler(MailAlreadyExistException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String idNotFoundHandler(IdNotFoundException e) {
         return e.getMessage();
     }
 
