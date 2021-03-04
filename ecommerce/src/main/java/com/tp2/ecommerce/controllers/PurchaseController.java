@@ -19,4 +19,14 @@ public class PurchaseController {
     public List<Purchase> getAll(){
         return purchaseService.findAll();
     }
+
+    @GetMapping(path = "/{customerId}")
+    public List<Purchase> getCustomerRecord (@PathVariable("customerId") long customerId){
+        return purchaseService.getCustomerRecord(customerId);
+    }
+
+    @PostMapping
+    public void createPurchase(@RequestBody Purchase purchase){
+        purchaseService.createPurchase(purchase);
+    }
 }
