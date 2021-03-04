@@ -2,6 +2,7 @@ package com.tp2.ecommerce.services;
 
 import com.tp2.ecommerce.entities.Customer;
 import com.tp2.ecommerce.entities.Purchase;
+import com.tp2.ecommerce.entities.Stock;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.repositories.PurchaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,9 @@ public class PurchaseService {
         return purchaseRepository.findAll();
     }
 
-    public void createPurchase(Purchase purchase){
+    public List<Stock> createPurchase(Purchase purchase){
         purchaseRepository.save(purchase);
-        stockService.updateStock(purchase);
+        return stockService.updateStock(purchase);
     }
 
     public List<Purchase> getCustomerRecord(long customerId) throws IdNotFoundException {

@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.controllers;
 
 import com.tp2.ecommerce.entities.Purchase;
+import com.tp2.ecommerce.entities.Stock;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.services.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class PurchaseController {
     }
 
     @PostMapping
-    public void createPurchase(@RequestBody Purchase purchase){
-        purchaseService.createPurchase(purchase);
+    public List<Stock> createPurchase(@RequestBody Purchase purchase){
+        return purchaseService.createPurchase(purchase);
     }
 }

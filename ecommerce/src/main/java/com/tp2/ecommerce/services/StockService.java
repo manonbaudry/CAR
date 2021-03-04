@@ -1,5 +1,7 @@
 package com.tp2.ecommerce.services;
 
+import com.tp2.ecommerce.entities.Product;
+import com.tp2.ecommerce.entities.ProductOrdered;
 import com.tp2.ecommerce.entities.Purchase;
 import com.tp2.ecommerce.entities.Stock;
 import com.tp2.ecommerce.repositories.StockRepository;
@@ -18,11 +20,14 @@ public class StockService {
         return stockRepository.findAll();
     }
 
-    public void updateStock(Purchase purchase) {
-        //TODO Update Stock after purchase
-        List<Stock> stocks = stockRepository.findAll();
-        for (Stock stock: stocks) {
-
+    public List<Stock> updateStock(Purchase purchase) {
+        for(ProductOrdered productOrdered : purchase.getProducts()){
+            Product product = productOrdered.getProduct();
+            Stock stock = stockRepository.findByProduct(product);
+            //TODO Gérer exception si stock < 0
+            stock.setRemainingProducts(stock.getRemainingProducts() - productOrdered.getQuantity());
+            stockRepository.save(stock);
         }
+        return stockRepository.findAll();
     }
 }
