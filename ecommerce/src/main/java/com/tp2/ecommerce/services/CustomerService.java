@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.services;
 
 import com.tp2.ecommerce.entities.Customer;
+import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,12 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer findById(long id){
-        return customerRepository.findById(id);
+    public Customer findById(long id) throws IdNotFoundException {
+        Customer customer = customerRepository.findById(id);
+        if (customer == null) {
+            throw new IdNotFoundException("The given customer id was not found");
+        }
+        return customer;
     }
 
     public void createCustomer(Customer customer) throws MailAlreadyExistException {
