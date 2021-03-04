@@ -24,4 +24,10 @@ public class StockController {
     public List<Stock> getAll(){
         return stockRepository.findAll();
     }
+
+    @GetMapping
+    public List<Stock> getProductInStock(){
+        //TODO ne renvoyer que les produits en stock
+        return null;
+    }
 }
