@@ -16,10 +16,12 @@ public class Customer {
     private String name;
     private String lastName;
     private String mail;
+    private String password;
 
-    public Customer(String name, String lastName, String mail) {
+    public Customer(String name, String lastName, String mail, String password) {
         this.name = name;
         this.lastName = lastName;
         this.mail = mail;
+        this.password = password;
     }
 }
