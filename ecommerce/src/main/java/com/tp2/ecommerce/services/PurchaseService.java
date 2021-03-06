@@ -33,6 +33,7 @@ public class PurchaseService {
 
     public List<Purchase> getCustomerRecord(long customerId) throws IdNotFoundException {
         Customer customer = customerService.findById(customerId);
-        return purchaseRepository.findByCustomer(customer);
+        List<Purchase> p = purchaseRepository.findByCustomer(customer);
+        return p;
     }
 }

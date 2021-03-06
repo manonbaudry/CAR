@@ -24,6 +24,7 @@ public class PurchaseController {
 
     @GetMapping(path = "/{customerId}")
     public List<Purchase> getCustomerRecord (@PathVariable("customerId") long customerId) throws IdNotFoundException {
+       //TODO Fix Bug
         return purchaseService.getCustomerRecord(customerId);
     }
 

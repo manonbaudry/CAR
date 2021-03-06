@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.services;
 
 import com.tp2.ecommerce.entities.Customer;
+import com.tp2.ecommerce.exceptions.ConnectionRefused;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.repositories.CustomerRepository;
@@ -32,5 +33,13 @@ public class CustomerService {
             customerRepository.save(customer);
         }
         throw new MailAlreadyExistException("The given mail is already in use");
+    }
+
+    public Customer connect(String mail, String pwd) throws ConnectionRefused {
+        Customer customer = customerRepository.findByMailAndPassword(mail, pwd);
+        if (customer == null) {
+            throw new ConnectionRefused("Incorrect email or password");
+        }
+        return customer;
     }
 }
