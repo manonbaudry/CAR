@@ -6,14 +6,24 @@ import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/customer")
 public class CustomerController {
-
+	
+	@RequestMapping(value = {
+	        "",
+	        "/connection",
+	        "*/*"
+	    })
+    public String simple() {
+	     return "connection";
+    }
+    
     @Autowired
     private CustomerService customerService;
 
