@@ -32,6 +32,6 @@ public class StockService {
     }
 
     public List<Stock> getProductInStock() {
-        return null;
+        return stockRepository.findByRemainingProductsGreaterThan(0);
     }
 }
