@@ -30,4 +30,8 @@ public class StockService {
         }
         return stockRepository.findAll();
     }
+
+    public List<Stock> getProductInStock() {
+        return null;
+    }
 }

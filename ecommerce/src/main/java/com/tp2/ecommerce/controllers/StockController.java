@@ -1,9 +1,8 @@
 package com.tp2.ecommerce.controllers;
 
-import com.tp2.ecommerce.entities.Product;
 import com.tp2.ecommerce.entities.Stock;
 import com.tp2.ecommerce.repositories.StockRepository;
-import com.tp2.ecommerce.services.ProductService;
+import com.tp2.ecommerce.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +17,15 @@ import java.util.List;
 public class StockController {
 
     @Autowired
-    private StockRepository stockRepository;
+    private StockService stockService;
 
     @GetMapping(path = "/stocks")
     public List<Stock> getAll(){
-        return stockRepository.findAll();
+        return stockService.findAll();
     }
 
     @GetMapping
     public List<Stock> getProductInStock(){
-        //TODO ne renvoyer que les produits en stock
-        return null;
+        return stockService.getProductInStock();
     }
 }
