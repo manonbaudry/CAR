@@ -2,7 +2,6 @@ package com.tp2.ecommerce.controllers;
 
 import com.tp2.ecommerce.entities.Purchase;
 import com.tp2.ecommerce.entities.Stock;
-import com.tp2.ecommerce.exceptions.ConnectionRefused;
 import com.tp2.ecommerce.exceptions.EmptyStockException;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.services.PurchaseService;

@@ -17,7 +17,7 @@ public class Purchase {
     private LocalDateTime date;
     @ManyToOne
     private Customer customer;
-    @OneToMany
+    @ManyToMany
     private List<ProductOrdered> products;
 
     public Purchase(LocalDateTime date, Customer customer, List<ProductOrdered> products) {

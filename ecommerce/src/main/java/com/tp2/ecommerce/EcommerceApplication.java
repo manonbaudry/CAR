@@ -46,7 +46,10 @@ public class EcommerceApplication {
             productOrderedRepository.saveAll(productsOrdered);
 
             Purchase purchase1 = new Purchase(LocalDateTime.now(), customers.get(0), productsOrdered);
+            Purchase purchase2 = new Purchase(LocalDateTime.now(), customers.get(1), productsOrdered);
             purchaseRepository.save(purchase1);
+            purchaseRepository.save(purchase2);
+
         };
     }
 
@@ -60,8 +63,8 @@ public class EcommerceApplication {
     }
 
     private List<Stock> initializeStocks(List<Product> products) {
-        Stock stock1 = new Stock(5, products.get(0));
-        Stock stock2 = new Stock(2, products.get(1));
+        Stock stock1 = new Stock(50, products.get(0));
+        Stock stock2 = new Stock(20, products.get(1));
         List<Stock> stocks = new ArrayList<>();
         stocks.add(stock1);
         stocks.add(stock2);
