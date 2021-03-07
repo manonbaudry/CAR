@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+import javax.servlet.http.HttpSession;
+
 @SpringBootApplication
 public class EcommerceApplication {
 
@@ -69,7 +70,7 @@ public class EcommerceApplication {
     }
 
     private List<Customer> initializeCustomers() {
-        Customer brice = new Customer("Brice", "Despelchin", "bdespelchinp@gmail.com", "azerty");
+        Customer brice = new Customer("Brice", "Despelchin", "a", "a");
         Customer manon = new Customer("Manon", "Baudry", "mbaudry@gmail.com", "azerty");
         List<Customer> customers = new ArrayList<>();
         customers.add(brice);

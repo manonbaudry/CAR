@@ -1,16 +1,27 @@
 package com.tp2.ecommerce.controllers;
 
+import com.tp2.ecommerce.entities.Customer;
 import com.tp2.ecommerce.entities.Purchase;
 import com.tp2.ecommerce.entities.Stock;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.services.PurchaseService;
+
+import javassist.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpRequest;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @CrossOrigin
-@RestController
+@Controller
 @RequestMapping("/purchase")
 public class PurchaseController {
 
@@ -32,4 +43,13 @@ public class PurchaseController {
     public List<Stock> createPurchase(@RequestBody Purchase purchase){
         return purchaseService.createPurchase(purchase);
     }
+    
+	@GetMapping("/addToCart")
+    public String addToCart(HttpRequest request , Model model) {
+       // request.getParameterMap();
+        System.out.println(request);
+             
+        return"order";
+    }
+	
 }

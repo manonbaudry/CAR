@@ -21,11 +21,11 @@ public class StockService {
     }
 
     public List<Stock> updateStock(Purchase purchase) {
-        for(ProductOrdered productOrdered : purchase.getProducts()){
+        for(ProductOrdered productOrdered : purchase.getProducts()) {
             Product product = productOrdered.getProduct();
             Stock stock = stockRepository.findByProduct(product);
             //TODO Gérer exception si stock < 0
-            stock.setRemainingProducts(stock.getRemainingProducts() - productOrdered.getQuantity());
+            stock.setRemainingProducts(stock.getRemainingProducts()- productOrdered.getQuantity());
             stockRepository.save(stock);
         }
         return stockRepository.findAll();

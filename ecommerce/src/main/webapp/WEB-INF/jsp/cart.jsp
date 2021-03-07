@@ -1,4 +1,4 @@
-
+<!-- 
 <jsp:useBean id="cart" scope="session" class="sessions.cart" />
 
 <jsp:setProperty name="cart" property="*" />
@@ -22,3 +22,4 @@
 </c:if>
 
 </html>
+ -->

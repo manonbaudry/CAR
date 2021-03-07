@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class Stock {
     @Id
     @GeneratedValue
-    private Long id;
+    private int id;
     private int remainingProducts;
     @OneToOne
     private Product product;
