@@ -13,17 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/customer")
 public class CustomerController {
-	
-	@RequestMapping(value = {
-	        "",
-	        "/connection",
-	        "*/*"
-	    })
-    public String simple() {
-	     return "connection";
-    }
-    
+
     @Autowired
     private CustomerService customerService;
 

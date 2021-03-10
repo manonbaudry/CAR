@@ -65,9 +65,11 @@ public class EcommerceApplication {
     private List<Stock> initializeStocks(List<Product> products) {
         Stock stock1 = new Stock(50, products.get(0));
         Stock stock2 = new Stock(20, products.get(1));
+        Stock stock3 = new Stock(2, products.get(2));
         List<Stock> stocks = new ArrayList<>();
         stocks.add(stock1);
         stocks.add(stock2);
+        stocks.add(stock3);
         return stocks;
     }
 
@@ -81,11 +83,13 @@ public class EcommerceApplication {
     }
 
     private List<Product> initializeProducts() {
-        Product lampe = new Product("lampe", 5);
-        Product chaise = new Product("chaise", 15);
+        Product biere1 = new Product("Karmeliet", 5, "La bière Tripel Karmeliet est l'un des grands classiques des bières belges");
+        Product biere2 = new Product("Paix Dieu", 6, "La Paix-Dieu est la seule bière d'abbaye brassée en pleine lune par la Brasserie Caulier.");
+        Product biere3 = new Product("Duvel", 6, "La bière Duvel est une bière belge fruitée dont la réputation n'est plus à faire");
         List<Product> products = new ArrayList<>();
-        products.add(lampe);
-        products.add(chaise);
+        products.add(biere1);
+        products.add(biere2);
+        products.add(biere3);
         return products;
     }
 
