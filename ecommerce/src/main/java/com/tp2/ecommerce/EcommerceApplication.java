@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Ecommerce App. 
+ */
 @Configuration
 @SpringBootApplication
 public class EcommerceApplication {
@@ -23,10 +26,7 @@ public class EcommerceApplication {
     }
 
     /***
-     * Initialize database
-     * @param productRepository
-     * @param customerRepository
-     * @return insert data
+     * Initialize database with all repo (ie. databases tables
      */
     @Bean
     CommandLineRunner init(ProductRepository productRepository, CustomerRepository customerRepository,
@@ -53,6 +53,10 @@ public class EcommerceApplication {
         };
     }
 
+    /**
+     * Product ordered initializer
+     * @param products - list of products order to initialize
+     */
     private List<ProductOrdered> initializeProductsOrdered(List<Product> products) {
         List<ProductOrdered> productsOrdered = new ArrayList<>();
         ProductOrdered productOrdered1 = new ProductOrdered(products.get(0), 1);
@@ -62,6 +66,10 @@ public class EcommerceApplication {
         return productsOrdered;
     }
 
+    /**
+     * Stock initializer
+     * @param products - List of product to initialize in stocks
+     */
     private List<Stock> initializeStocks(List<Product> products) {
         Stock stock1 = new Stock(50, products.get(0));
         Stock stock2 = new Stock(20, products.get(1));
@@ -73,6 +81,10 @@ public class EcommerceApplication {
         return stocks;
     }
 
+    /**
+     * Customer initializer
+     * @return list of customers in app
+     */
     private List<Customer> initializeCustomers() {
         Customer brice = new Customer("Brice", "Despelchin", "bdespelchinp@gmail.com", "azerty");
         Customer manon = new Customer("Manon", "Baudry", "mbaudry@gmail.com", "azerty");
@@ -82,6 +94,10 @@ public class EcommerceApplication {
         return customers;
     }
 
+    /**
+     * Product initializer
+     * @return - List of product in shop
+     */
     private List<Product> initializeProducts() {
         Product biere1 = new Product("Karmeliet", 5, "La bière Tripel Karmeliet est l'un des grands classiques des bières belges");
         Product biere2 = new Product("Paix Dieu", 6, "La Paix-Dieu est la seule bière d'abbaye brassée en pleine lune par la Brasserie Caulier.");

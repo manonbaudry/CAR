@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Purchase service. Used for update stocks and map purchase to customer.
+ */
 @Service
 public class PurchaseService {
 

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Customer service. CRUD on customer repository
+ */
 @Service
 public class CustomerService {
 

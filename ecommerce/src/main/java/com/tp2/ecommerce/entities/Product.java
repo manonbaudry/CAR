@@ -8,6 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+/**
+ * Product model. A product is an item sell in shop. 
+ *
+ */
 @Data
 @Entity
 public class Product {

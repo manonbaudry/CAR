@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Stock model. A stock contain a list of products
+ *
+ */
 @Data
 @Entity
 @RequiredArgsConstructor

@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Product ordered model. Contains a product and a quantity
+ *
+ */
 @Data
 @Entity
 @RequiredArgsConstructor

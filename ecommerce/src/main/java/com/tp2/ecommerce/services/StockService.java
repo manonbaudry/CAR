@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Stock service. Used to maintain and update stocks
+ */
 @Service
 public class StockService {
 
