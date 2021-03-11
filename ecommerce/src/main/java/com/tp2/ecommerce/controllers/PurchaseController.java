@@ -20,6 +20,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Purchase controller.
+ * List purchases, purchase by id, cart, etc
+ */
 @CrossOrigin
 @Controller
 @RequestMapping("/purchase")
@@ -44,11 +48,13 @@ public class PurchaseController {
         return purchaseService.createPurchase(purchase);
     }
     
+    /**
+     * Add a product to shopping cart
+     */
 	@GetMapping("/addToCart")
     public String addToCart(HttpRequest request , Model model) {
        // request.getParameterMap();
-        System.out.println(request);
-             
+        System.out.println(request);        
         return"order";
     }
 	

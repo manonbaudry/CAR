@@ -7,6 +7,10 @@ import com.tp2.ecommerce.services.ProductService;
 
 import java.util.List;
 
+/**
+ * ProductController.
+ * List all product in app
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/product")

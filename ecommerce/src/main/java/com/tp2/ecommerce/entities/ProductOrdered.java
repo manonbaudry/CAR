@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Ordered product. Contain a product reference.
+ *
+ */
 @Data
 @Entity
 @RequiredArgsConstructor

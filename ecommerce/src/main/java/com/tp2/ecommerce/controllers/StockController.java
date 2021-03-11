@@ -21,6 +21,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * Stock controller.
+ * List current stocks
+ */
 @CrossOrigin
 @Controller
 @RequestMapping("/stock")

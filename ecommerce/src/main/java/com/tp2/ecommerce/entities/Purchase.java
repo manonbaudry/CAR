@@ -7,6 +7,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Purchase model. Map a customer to a list of products  
+ * 	
+ */
 @Data
 @Entity
 @RequiredArgsConstructor

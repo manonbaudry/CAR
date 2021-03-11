@@ -8,20 +8,22 @@ import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.services.CustomerService;
 import com.tp2.ecommerce.services.ProductService;
 import com.tp2.ecommerce.services.StockService;
-
 import javassist.NotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpSession;
+
+
+/**
+ * Customer controller.
+ * Use connection service. Authent & Routing
+ */
 @RequestMapping("/")
 @Controller
 public class CustomerController {
@@ -30,12 +32,19 @@ public class CustomerController {
 	@Autowired
 	private StockService stockService;
 	
+	/**
+	 * Connection routing method
+	 */
 	@GetMapping(value = { "/", "/index","/connection"})
 	public String connection(Model model) {
 		String message = "Sign in";
 		model.addAttribute("message", message);
 		return "connection";
 	}
+	
+	/**
+	 * Inscription routing method.
+	 */
 	@GetMapping(value = { "/inscription"})
 	public String inscription(Model model) {
 		String message = "Sign up";
@@ -43,6 +52,14 @@ public class CustomerController {
 		return "inscription";
 	}
 	
+	/**
+	 * Check if the given user is in database
+	 * @param customerForm - datas from front 
+	 * @param result - result get 
+	 * @param model - customer model 
+	 * @param session - current user session
+	 * @return path productlist if the user is authent, connection if authent failed.
+	 */
 	@GetMapping(value = "/checkLogin")
 	public String checkLogin(@ModelAttribute("userFormData") Customer customerForm, BindingResult 
 	result, Model model,  HttpSession session) throws com.tp2.ecommerce.exceptions.ConnectionRefused, NotFoundException {
