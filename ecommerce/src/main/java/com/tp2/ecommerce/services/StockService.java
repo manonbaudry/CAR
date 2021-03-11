@@ -20,6 +20,11 @@ public class StockService {
         return stockRepository.findAll();
     }
 
+    /**
+     * Update the stock in database
+     * @param purchase - purchase to retrieve to our stock
+     * @return updatedStock
+     */
     public List<Stock> updateStock(Purchase purchase) {
         for(ProductOrdered productOrdered : purchase.getProducts()) {
             Product product = productOrdered.getProduct();

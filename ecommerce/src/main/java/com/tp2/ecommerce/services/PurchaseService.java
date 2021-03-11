@@ -31,6 +31,11 @@ public class PurchaseService {
         return stockService.updateStock(purchase);
     }
 
+    /**
+     * Get a list of purchase by customers
+     * @param customerId - customer to find
+     * @return the order
+     */
     public List<Purchase> getCustomerRecord(long customerId) throws IdNotFoundException {
         Customer customer = customerService.findById(customerId);
         List<Purchase> p = purchaseRepository.findByCustomer(customer);

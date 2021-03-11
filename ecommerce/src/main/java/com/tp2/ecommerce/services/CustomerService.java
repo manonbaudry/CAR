@@ -15,6 +15,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * Customer service used for authent & history
+ *
+ */
 @Service
 public class CustomerService {
 
@@ -40,7 +44,6 @@ public class CustomerService {
 		}
 		return customer;
 	}
-
 
 	public void createCustomer(Customer customer) throws MailAlreadyExistException {
 		if (customerRepository.findByMail(customer.getMail()) == null) {
