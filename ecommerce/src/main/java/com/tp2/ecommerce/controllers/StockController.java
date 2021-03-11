@@ -24,6 +24,7 @@ public class StockController {
         return stockService.findAll();
     }
 
+    @CrossOrigin
     @GetMapping
     public List<Stock> getProductInStock(){
         return stockService.getProductInStock();

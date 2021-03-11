@@ -15,9 +15,10 @@ public class Purchase {
     @GeneratedValue
     private Long id;
     private LocalDateTime date;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Customer customer;
-    @ManyToMany
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "product")
     private List<ProductOrdered> products;
 
     public Purchase(LocalDateTime date, Customer customer, List<ProductOrdered> products) {

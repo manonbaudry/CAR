@@ -19,22 +19,25 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    @CrossOrigin
     @GetMapping(path = "/purchases")
     public List<Purchase> getAll(){
         return purchaseService.findAll();
     }
 
+    @CrossOrigin
     @GetMapping(path = "/{customerId}")
     public List<Purchase> getCustomerRecord (@PathVariable("customerId") long customerId) throws IdNotFoundException {
-       //TODO Fix Bug
         return purchaseService.getCustomerRecord(customerId);
     }
 
+    @CrossOrigin
     @PostMapping
     public List<Stock> createPurchase(@RequestBody Purchase purchase) throws EmptyStockException {
         return purchaseService.createPurchase(purchase);
     }
 
+    @CrossOrigin
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String EmptyStockHandler(EmptyStockException e) {

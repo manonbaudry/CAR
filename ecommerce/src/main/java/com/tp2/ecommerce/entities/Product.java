@@ -1,6 +1,7 @@
 package com.tp2.ecommerce.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
@@ -9,7 +10,6 @@ import javax.persistence.Id;
 
 @Data
 @Entity
-@RequiredArgsConstructor
 public class Product {
     @Id
     @GeneratedValue
@@ -18,6 +18,7 @@ public class Product {
     private double price;
     private String description;
 
+    public Product() {}
     public Product(String name, double price, String description) {
         this.name = name;
         this.price = price;

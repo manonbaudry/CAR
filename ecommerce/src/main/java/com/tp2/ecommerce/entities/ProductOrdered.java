@@ -10,10 +10,10 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 public class ProductOrdered {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private int quantity;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private Product product;
 
     public ProductOrdered(Product product, int quantity) {

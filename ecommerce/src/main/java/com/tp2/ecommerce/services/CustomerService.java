@@ -5,6 +5,7 @@ import com.tp2.ecommerce.exceptions.ConnectionRefused;
 import com.tp2.ecommerce.exceptions.IdNotFoundException;
 import com.tp2.ecommerce.exceptions.MailAlreadyExistException;
 import com.tp2.ecommerce.repositories.CustomerRepository;
+import com.tp2.ecommerce.utils.ConnectionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +29,16 @@ public class CustomerService {
         return customer;
     }
 
-    public void createCustomer(Customer customer) throws MailAlreadyExistException {
+    public Customer createCustomer(Customer customer) throws MailAlreadyExistException {
         if (customerRepository.findByMail(customer.getMail()) == null) {
-            customerRepository.save(customer);
+            return customerRepository.save(customer);
+        } else {
+            throw new MailAlreadyExistException("The given mail is already in use");
         }
-        throw new MailAlreadyExistException("The given mail is already in use");
     }
 
-    public Customer connect(String mail, String pwd) throws ConnectionRefused {
-        Customer customer = customerRepository.findByMailAndPassword(mail, pwd);
+    public Customer connect(ConnectionInfo connectionInfo) throws ConnectionRefused {
+        Customer customer = customerRepository.findByMailAndPassword(connectionInfo.getMail(), connectionInfo.getPassword());
         if (customer == null) {
             throw new ConnectionRefused("Incorrect email or password");
         }
