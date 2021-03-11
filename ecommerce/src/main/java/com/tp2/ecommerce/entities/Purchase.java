@@ -22,7 +22,7 @@ public class Purchase {
     @ManyToOne(cascade = CascadeType.REMOVE)
     private Customer customer;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOrdered> products;
 
     public Purchase(LocalDateTime date, Customer customer, List<ProductOrdered> products) {

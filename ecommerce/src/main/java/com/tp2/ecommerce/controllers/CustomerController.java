@@ -32,7 +32,7 @@ public class CustomerController {
     }
 
     @CrossOrigin
-    @GetMapping
+    @PostMapping(path = "/connect")
     public Customer connect(@RequestBody ConnectionInfo connectionInfo) throws ConnectionRefused {
         return customerService.connect(connectionInfo);
     }

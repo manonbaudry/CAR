@@ -42,13 +42,13 @@ public class EcommerceApplication {
             List<Stock> stocks = initializeStocks(products);
             stockRepository.saveAll(stocks);
 
-            List<ProductOrdered> productsOrdered = initializeProductsOrdered(products);
-            productOrderedRepository.saveAll(productsOrdered);
-
-            Purchase purchase1 = new Purchase(LocalDateTime.now(), customers.get(0), productsOrdered);
-            Purchase purchase2 = new Purchase(LocalDateTime.now(), customers.get(1), productsOrdered);
-            purchaseRepository.save(purchase1);
-            purchaseRepository.save(purchase2);
+//            List<ProductOrdered> productsOrdered = initializeProductsOrdered(products);
+//            productOrderedRepository.saveAll(productsOrdered);
+//
+//            Purchase purchase1 = new Purchase(LocalDateTime.now(), customers.get(0), productsOrdered);
+//            Purchase purchase2 = new Purchase(LocalDateTime.now(), customers.get(1), productsOrdered);
+//            purchaseRepository.save(purchase1);
+//            purchaseRepository.save(purchase2);
 
         };
     }
