@@ -3,8 +3,13 @@ package actors;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Paths;
+
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
 import main.Main;
+import scala.Option;
 /**
  * The Master actor distributes the lines of the file alternately to each Mapper object
  *
@@ -19,7 +24,7 @@ public class Master extends UntypedActor {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				getContext().actorSelection(Main.HOST + "/user/mapper" + i% Main.NBMAPPER).tell(new Message(line.toUpperCase()), self());
+				Main.system.actorSelection(Main.paths.get("mapper" + (i% Main.NBMAPPER))).tell(new Message(line.toUpperCase()), getSelf());
 				i++;
 			}
 		} catch (Exception e) {
@@ -29,7 +34,7 @@ public class Master extends UntypedActor {
 
 	private void callReducer(Message message) {
 		for (int i=0; i < Main.NBREDUCER; i++) {
-			getContext().actorSelection(Main.HOST + "/user/reducer" + i%Main.NBREDUCER).tell(message, getSelf());
+			Main.system.actorSelection(Main.paths.get("reducer" + i%Main.NBREDUCER)).tell(message, getSelf());
 		}
 	}
 
