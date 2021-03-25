@@ -19,7 +19,11 @@ public class Reducer extends UntypedActor {
 	public Reducer() {
 		this.occurences = new HashMap<>();
 	}
-
+	
+	/**
+	 * Add a word to our occurences hashmap.
+	 * @param word
+	 */
 	private void addWord(String word) {
 		if (!occurences.containsKey(word)) {
 			occurences.put(word, 1);
@@ -28,6 +32,9 @@ public class Reducer extends UntypedActor {
 		}
 	}
 
+	/**
+	 * Print occurences hashmap to normal output system.
+	 */
 	private void printOccurences() {
 		for (Map.Entry<String, Integer> e : occurences.entrySet()) {
 			System.out.println(e.getKey() + " -> " + e.getValue());

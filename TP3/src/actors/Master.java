@@ -16,15 +16,19 @@ import scala.Option;
  * @author Brice Despelchin, Manon Baudry
  */
 public class Master extends UntypedActor {
-
+	
 	public Master() {}
 
+	/**
+	 * Distribute lines of a file to our mappers.
+	 * @param file - the file to read & distribute
+	 */
 	private void distributeRows(File file) {
 		int i = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				Main.system.actorSelection(Main.paths.get("mapper" + (i% Main.NBMAPPER))).tell(new Message(line.toUpperCase()), getSelf());
+				Main.paths.get("mapper" + (i% Main.NBMAPPER)).tell(new Message(line.toUpperCase()), getSelf());
 				i++;
 			}
 		} catch (Exception e) {
@@ -32,9 +36,13 @@ public class Master extends UntypedActor {
 		}
 	}
 
+	/**
+	 * Call our reducers with a given message
+	 * @param message - the message to send to our reducer
+	 */
 	private void callReducer(Message message) {
 		for (int i=0; i < Main.NBREDUCER; i++) {
-			Main.system.actorSelection(Main.paths.get("reducer" + i%Main.NBREDUCER)).tell(message, getSelf());
+			Main.paths.get("reducer" + i%Main.NBREDUCER).tell(message, getSelf());
 		}
 	}
 
